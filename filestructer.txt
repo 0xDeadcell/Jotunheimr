@@ -1,0 +1,24 @@
+├── Jotunheimr
+│   ├── app.py
+│   ├── config.py
+|    ├── config.yml
+│   ├── requirements.txt
+|    ├── assets/
+|     |   ├── app_name/
+|     |    |     ├── user_image/
+|     |    |     ├── user_scripts/
+|     |    |     ├── details.json
+│   ├── templates/
+│   │   ├── base.html
+│   │   ├── index.html
+│   │   ├── add_app.html
+│   │   ├── app_details.html
+│   ├── static/
+│   │   ├── favicon.ico
+│   │   ├── css/
+│   │   │   ├── style.css
+│   │   ├── img/
+│   │   │   ├── logo.png
+│   │   │   ├── dasboard_icon.png
+│   │   ├── js/
+│   │   │   ├── main.js

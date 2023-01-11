@@ -15,14 +15,40 @@
         <nav>
             <ul>
                 <li><a href="{{ url_for('index') }}">Home</a></li>
-                <li><a href="#">About</a></li>
-                <li><a href="#">Contact</a></li>
+                <li>
+                    <a href="#" id="add-app-link">Add App</a>
+                    <div id="add-app-form">
+                        <form action="{{ url_for('add_app') }}" method="POST" enctype="multipart/form-data">
+                            <label for="app_name">Name:</label>
+                            <input type="text" id="app_name" name="app_name">
+                            <br>
+                            <label for="app_image">Image:</label>
+                            <input type="file" id="app_image" name="app_image">
+                            <br>
+                            <label for="app_desc">Description:</label>
+                            <input type="text" id="app_desc" name="app_desc">
+                            <br>
+                            <label for="app_tag">Tag:</label>
+                            <input type="text" id="app_tag" name="app_tag">
+                            <br>
+                            <input type="submit" value="Add">
+                        </form>
+                    </div>
+                </li>
             </ul>
         </nav>
     </header>
     {% block content %}{% endblock %}
     <footer>
-        <p>Copyright © 2021 Jotunheimr</p>
+        <p>Copyright © 2023 Jotunheimr</p>
     </footer>
 </body>
 </html>
+<script>
+    var addAppLink = document.getElementById('add-app-link');
+    var addAppForm = document.getElementById('add-app-form');
+
+    addAppLink.onclick = function() {
+        addAppForm.style.display = "block";
+    }
+</script>
