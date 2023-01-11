@@ -1,0 +1,106 @@
+@charset "UTF-8";
+
+/* raleway-regular - latin */
+@font-face {
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 400;
+  src: url('./fonts/raleway-v22-latin-regular.eot'); /* IE9 Compat Modes */
+  src: local(''),
+       url('./fonts/raleway-v22-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('./fonts/raleway-v22-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+       url('./fonts/raleway-v22-latin-regular.woff') format('woff'), /* Modern Browsers */
+       url('./fonts/raleway-v22-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('./fonts/raleway-v22-latin-regular.svg#Raleway') format('svg'); /* Legacy iOS */
+}
+
+/* lato-regular - latin */
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 400;
+  src: url('./fonts/lato-v20-latin-regular.eot'); /* IE9 Compat Modes */
+  src: local(''),
+       url('./fonts/lato-v20-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('./fonts/lato-v20-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+       url('./fonts/lato-v20-latin-regular.woff') format('woff'), /* Modern Browsers */
+       url('./fonts/lato-v20-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('./fonts/lato-v20-latin-regular.svg#Lato') format('svg'); /* Legacy iOS */
+}
+
+/* lato-700 - latin */
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 700;
+  src: url('./fonts/lato-v20-latin-700.eot'); /* IE9 Compat Modes */
+  src: local(''),
+       url('./fonts/lato-v20-latin-700.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('./fonts/lato-v20-latin-700.woff2') format('woff2'), /* Super Modern Browsers */
+       url('./fonts/lato-v20-latin-700.woff') format('woff'), /* Modern Browsers */
+       url('./fonts/lato-v20-latin-700.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('./fonts/lato-v20-latin-700.svg#Lato') format('svg'); /* Legacy iOS */
+}
+
+/* lato-900 - latin */
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 900;
+  src: url('./fonts/lato-v20-latin-900.eot'); /* IE9 Compat Modes */
+  src: local(''),
+       url('./fonts/lato-v20-latin-900.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('./fonts/lato-v20-latin-900.woff2') format('woff2'), /* Super Modern Browsers */
+       url('./fonts/lato-v20-latin-900.woff') format('woff'), /* Modern Browsers */
+       url('./fonts/lato-v20-latin-900.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('./fonts/lato-v20-latin-900.svg#Lato') format('svg'); /* Legacy iOS */
+}
+
+/* Sets the group title to be a bolder font */
+.group-title {
+  font-family: Lato;
+  font-weight: 800;
+}
+
+/* Changes the card title to be a bolder font */
+.title {
+  font-weight: 700;
+}
+
+/* Changes the subtitle to be a bolder font */
+.subtitle {
+  font-weight: 500;
+}
+
+/* Adds spacing to the bottom of cards */
+body #app .card-content {
+  margin-bottom: 0.75rem;
+}
+
+ /*Adds more border radius to the cards */
+body .layout-vertical .column div:first-of-type .card {
+  border-radius: 1rem;
+}
+body .layout-vertical .card {
+  border-radius: 1rem;
+}
+.card {
+    border-radius: 1rem;
+}
+body .layout-vertical .column div:last-of-type .card { 
+    border-radius: 1rem; 
+}
+
+/* Changes Header Opacity */
+body #bighead .navbar {
+  background-color: rgba(0, 0, 0, 0);
+}
+
+body .search-bar input {
+    opacity: 20%;
+}
+
+body #bighead .navbar a:focus, body #bighead .navbar a:hover {
+   background-color: rgba(0, 0, 0, 0);
+   color: var(--link-hover);
+}

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="app-container">
+    <div class="app-image-container">
+        <img src="{{ app_data.image }}" alt="{{ app_data.name }}" class="app-image" style="width: 25%; margin: 0 auto;">
+    </div>
+    <div class="app-desc-container">
+        <p>{{ app_data.desc }}</p>
+    </div>
+    <div class="user-input-container">
+        <form action="{{ url_for('upload_script', app_name=app_data.name) }}" method="POST" enctype="multipart/form-data">
+            <input type="file" name="script">
+            <input type="submit" value="Upload">
+        </form>
+    </div>
+    <div class="run-script-container">
+        <form action="{{ url_for('run_script', app_name=app_data.name) }}" method="POST">
+            <input type="submit" value="Run Script">
+        </form>
+    </div>
+</div>
+{% endblock %}

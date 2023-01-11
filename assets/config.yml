@@ -1,0 +1,127 @@
+---
+title: "Asgard's Portal"
+subtitle: "Homer"
+logo: "assets/tools/solaire.png"
+
+header: true
+footer: '<p>Theme made with <span class="has-text-danger">❤️</span> by <a href="https://github.com/0xdeadcell">0xdeadcell</a></p>' # Set false if you want to hide it.
+
+stylesheet:
+  - "assets/custom.css"
+
+columns: "4" # You can change this to any number that is a factor of 12: (1, 2, 3, 4, 6, 12)
+theme: default
+colors:
+  light:
+    highlight-primary: "#fff5f2"
+    highlight-secondary: "#fff5f2"
+    highlight-hover: "#bebebe"
+    background: "#12152B"
+    card-background: "rgba(255, 245, 242, 0.8)"
+    text: "#ffffff"
+    text-header: "#fafafa"
+    text-title: "#000000"
+    text-subtitle: "#111111"
+    card-shadow: rgba(0, 0, 0, 0.5)
+    link: "#3273dc"
+    link-hover: "#2e4053"
+    background-image: "../assets/wallpaper-light.jpeg" # Change wallpaper.jpeg to the name of your own custom wallpaper!
+  dark:
+    highlight-primary: "#181C3A"
+    highlight-secondary: "#181C3A"
+    highlight-hover: "#1F2347"
+    background: "#12152B"
+    card-background: "rgba(24, 28, 58, 0.8)"
+    text: "#eaeaea"
+    text-header: "#7C71DD"
+    text-title: "#fafafa"
+    text-subtitle: "#8B8D9C"
+    card-shadow: rgba(0, 0, 0, 0.5)
+    link: "#c1c1c1"
+    link-hover: "#fafafa"
+    background-image: "../assets/wallpaper.jpeg"
+
+
+
+services:
+  - name: "Internal"
+    items:
+      - name: "Gitlab"
+        logo: "assets/tools/gitlab.png"
+        subtitle: "Gitlab Login"
+        tag: "internal"
+        tagstyle: "is-primary"
+        url: "http://localhost:80"
+        target: "_blank"
+      
+      - name: "Grafana"
+        logo: "assets/tools/grafana.png"
+        subtitle: "Grafana Dashboard"
+        tag: "internal"
+        tagstyle: "is-primary"
+        url: "http://localhost:3000"
+        target: "_blank"
+      
+      - name: "Portainer"
+        logo: "assets/tools/portainer.png"
+        subtitle: "Portainer Login"
+        tag: "internal"
+        tagstyle: "is-primary"
+        url: "http://localhost:9000"
+        target: "_blank"
+
+  - name: "Web"
+    items:
+      - name: "Homer"
+        logo: "assets/tools/homer.png"
+        subtitle: "This Dashboard!"
+        tag: "internal"
+        tagstyle: "is-primary"
+        url: "http://localhost:8080"
+        target: "_blank"
+      
+      - name: "Gatsby"
+        logo: "assets/tools/gatsby.png"
+        subtitle: "Gatsby CMS Website"
+        url: "http://localhost:8000"
+        target: "_blank"
+
+  - name: "Security"
+    items:
+      - name: "Authelia"
+        logo: "assets/tools/authelia.png"
+        subtitle: "Authentication Server"
+        url: "https://localhost:9090"
+        target: "_blank"
+      
+      - name: "PfSense"
+        logo: "assets/tools/pfsense.png"
+        subtitle: "Firewall and Routing"
+        url: "https://localhost:443"
+        target: "_blank"
+      
+      - name: "Tailscale"
+        logo: "assets/tools/tailscale.png"
+        subtitle: "VPN and Networking"
+        url: "https://localhost:6443"
+        target: "_blank"
+      
+      - name: "Elastic"
+        logo: "assets/tools/elastic.png"
+        subtitle: "Monitoring and Logging"
+        url: "https://localhost:9200"
+        target: "_blank"
+
+  - name: "Fun"
+    items:
+      - name: "Minecraft"
+        logo: "assets/tools/minecraft.png"
+        subtitle: "Minecraft Server"
+        url: "https://localhost:25565"
+        target: "_blank"
+      
+      - name: "Plex"
+        logo: "assets/tools/plex.png"
+        subtitle: "Media Streaming Server"
+        url: "https://localhost:32400"
+        target: "_blank"
