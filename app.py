@@ -1,8 +1,6 @@
 from flask import Flask, request, render_template, jsonify, url_for, redirect, send_from_directory
-from flask_scss import Scss
 from werkzeug.utils import secure_filename
 import subprocess
-import dotenv
 import json
 import os
 import re
