@@ -4,7 +4,7 @@
 <div class="app-list-container">
     <h2>Application List</h2>
     <ul>
-        {% for app in apps %}
+        {% for app in app_list %}
             <li>
                 <a href="{{ url_for('app', app_name=app.name) }}">{{ app.name }}</a>
                 <p>{{ app.desc }}</p>
