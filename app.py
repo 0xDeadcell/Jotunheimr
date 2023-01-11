@@ -134,7 +134,14 @@ def run_script(app_name):
     script_path = os.path.normpath(os.path.join(ROOT_PATH, 'assets/apps', app_name, 'user_scripts', 'script.py'))
     if os.path.exists(script_path):
         # Popen the script with stdout and stderr redirected
-        out, err = subprocess.Popen(['python', script_path], cwd=os.path.join(ROOT_PATH, 'assets/apps', app_name, 'user_scripts'), stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+        try:
+            out, err = subprocess.Popen(['python3', script_path], cwd=os.path.join(ROOT_PATH, 'assets/apps', app_name, 'user_scripts'), stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+        except Exception as e:
+            print("Invalid File or Python Version" + err + e)
+        try:
+            out, err = subprocess.Popen(['py', script_path], cwd=os.path.join(ROOT_PATH, 'assets/apps', app_name, 'user_scripts'), stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+        except Exception as e:
+            print(e)
         # Save the output to a file
         with open(os.path.normpath(os.path.join(ROOT_PATH, 'assets/apps', app_name, 'user_scripts', 'script_log.txt')), 'w') as f:
             f.write("STDOUT:\n")
