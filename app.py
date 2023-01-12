@@ -21,6 +21,7 @@ def allowed_file(filename):
     return '.' in filename and \
         filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+
 @app.route('/')
 def index():
     # Get the list of apps
@@ -29,7 +30,7 @@ def index():
     for app_name in os.listdir(os.path.normpath(os.path.join(ROOT_PATH, 'assets/apps'))):
         app_data = get_app_details(app_name)
         apps.append(app_data)
-        if app_data['tag'] not in app_tags:
+        if (app_data.get('tag', None) is not None) and (app_data.get('tag', None) not in app_tags):
             app_tags.append(app_data['tag'])
     return render_template('index.html', apps=apps, app_tags=app_tags)
 
@@ -55,7 +56,7 @@ def render_app(app_name):
 
 @app.route('/', methods=['POST'])
 def add_app():
-    app_name = re.sub(r'\W+', '', request.form['app_name'])
+    app_name = re.sub(r'\W+', '', request.form['app_name']).lower()
     app_desc = request.form['app_desc']
     app_tag = request.form['app_tag']
     app_image = request.files['app_image']
@@ -103,6 +104,26 @@ def add_app():
     return redirect(url_for('render_app', app_name=app_name))
 
 
+@app.route('/api/app/<app_name>/update', methods=['POST', 'GET'])
+def update_app_details(app_name):
+    if not os.path.exists(os.path.normpath(os.path.join(ROOT_PATH, f'assets/apps', app_name))):
+        return render_template('404.html')
+    with open(os.path.normpath(os.path.join(ROOT_PATH, f'assets/apps', app_name, 'details.json')), 'r') as f:
+        app_data = json.loads(f.read())
+    if request.args.get('tag', None) is not None:
+        app_tag = request.args.get('tag', None)
+        app_data['tag'] = app_tag
+    if request.args.get('description', None) is not None:
+        app_desc = request.args.get('description', None)
+        app_data['desc'] = app_desc
+    if request.args.get('name', None) is not None:
+        app_name = request.args.get('name', None)
+        app_data['name'] = app_name
+    with open(os.path.normpath(os.path.join(ROOT_PATH, f'assets/apps', app_name, 'details.json')), 'w') as f:
+        f.write(json.dumps(app_data))
+    return redirect(url_for('render_app', app_name=app_name))
+
+        
 @app.route('/api/app/<app_name>/delete', methods=['POST'])
 def delete_app(app_name):
     app_folder = os.path.normpath(os.path.join(ROOT_PATH, 'assets/apps', app_name))
