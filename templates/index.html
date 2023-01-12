@@ -3,32 +3,24 @@
 {% block content %}
 <div class="app-list-container">
     <h2>Application List</h2>
-    <ul>
-        {% for app in app_list %}
-            <li>
-                <a href="{{ url_for('app', app_name=app.name) }}">{{ app.name }}</a>
-                <p>{{ app.desc }}</p>
-                <p>{{ app.tag }}</p>
-            </li>
+    <div class="app-tags-container">
+        {% for tag in app_tags %}
+            <div class="app-tag-column" id="{{ tag }}">
+                <h3>{{ tag }}</h3>
+                <ul>
+                    {% for app in apps if app.tag == tag %}
+                        <li>
+                            <a href="{{ url_for('render_app', app_name=app.name) }}">{{ app.name }}</a>
+                            <img src="{{ url_for('get_app_image', app_name=app.name) }}" alt="app image" width="200" height="200">
+                            <p>{{ app.desc }}</p>
+                            <form action="{{ url_for('delete_app', app_name=app.name) }}" method="POST">
+                                <input type="submit" value="Delete App">
+                            </form>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
         {% endfor %}
-    </ul>
-    <!--<div class="add-app-container">
-        <h3>Add new application</h3>
-        <form action="{{ url_for('add_app') }}" method="POST" enctype="multipart/form-data">
-            <label for="app_name">Name:</label>
-            <input type="text" id="app_name" name="app_name">
-            <br>
-            <label for="app_image">Image:</label>
-            <input type="file" id="app_image" name="app_image">
-            <br>
-            <label for="app_desc">Description:</label>
-            <input type="text" id="app_desc" name="app_desc">
-            <br>
-            <label for="app_tag">Tag:</label>
-            <input type="text" id="app_tag" name="app_tag">
-            <br>
-            <input type="submit" value="Add">
-        </form>
-    </div>-->
+    </div>
 </div>
 {% endblock %}

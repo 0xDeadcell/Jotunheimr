@@ -1,0 +1,35 @@
+STDOUT:
+[+] Program list refreshed!
+
+[+] Program list refreshed!
+
+[+] Finding programs matching: 'asd'
+[+] Program list refreshed!
+
+[+] Finding programs matching: 'ch'
+[+] Program list refreshed!
+
+[+] Finding programs matching: 'chr'
+[+] Program list refreshed!
+
+[+] Finding programs matching: 'chr'
+[+] Program list refreshed!
+
+[+] Finding programs matching: 'chr'
+[+] Program list refreshed!
+
+[+] Finding programs matching: 'chr'
+[+] Program list refreshed!
+
+[+] chrome.exe
+[+] Searching for: chrome.exe
+[+] Filtering for PID: 2940
+{'name': 'chrome.exe', 'pid': 2940, 'cmdline': ['C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe', '--type=crashpad-handler', '--user-data-dir=C:\\Users\\Matt\\AppData\\Local\\Google\\Chrome\\User Data', '/prefetch:7', '--monitor-self-annotation=ptype=crashpad-handler', '--database=C:\\Users\\Matt\\AppData\\Local\\Google\\Chrome\\User Data\\Crashpad', '--url=https://clients2.google.com/cr/report', '--annotation=channel=', '--annotation=plat=Win64', '--annotation=prod=Chrome', '--annotation=ver=108.0.5359.125', '--initial-client-data=0x10c,0x110,0x114,0xe8,0x118,0x7ff86a797e68,0x7ff86a797e78,0x7ff86a797e88'], 'exe': 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe', 'ppid': 23932}
+
+
+[+] Finding programs matching: 'chr'
+[+] Program list refreshed!
+
+[+] chrome.exe
+
+STDERR:
