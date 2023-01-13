@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template, jsonify, url_for, redirect, send_from_directory
-from app import app
+from app import app, load_config
 from werkzeug.utils import secure_filename
 import subprocess
 import json
@@ -9,6 +9,7 @@ import re
 
 # Set the path to the directory containing this file
 ROOT_PATH = os.path.dirname(os.path.abspath(__file__))
+print(f"[+] Root path: {ROOT_PATH}")
 
 # Set the allowed extensions for files
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -21,12 +22,14 @@ def allowed_file(filename):
 
 @app.route('/')
 def index():
+    refresh_config()
     # Get the list of apps
-    title = app.config.get('TITLE', "Jotunheimr")
-    subtitle = app.config.get('SUBTITLE', "Application Dashboard")
-    logo = app.config.get('LOGO', "app/assets/tools/solaire.png")
-    header = app.config.get('HEADER', True)
-    user_css = app.config.get('USER_CSS', "app/assets/css/user.css")
+    title = app.config.get('title', "Jotunheimr")
+    subtitle = app.config.get('subtitle', "Application Dashboard")
+    logo = app.config.get('logo', "app/assets/tools/solaire.png")
+    header = app.config.get('header', True)
+    user_css = app.config.get('stylesheet', "app/assets/css/user.css")
+    print(f"[+] User CSS: {user_css}")
     apps = []
     app_tags = []
     for app_name in os.listdir(os.path.normpath(os.path.join(ROOT_PATH, 'assets/apps'))):
@@ -104,6 +107,27 @@ def add_app():
     
     print(app_name)
     return redirect(url_for('render_app', app_name=app_name))
+
+# Refresh the config file
+@app.route('/api/refresh', methods=['GET'])
+def refresh_config():
+    old_config = app.config
+    app.config.from_pyfile('config.py')
+    config_yml_path = app.config.get('CONFIG_YML_PATH', ROOT_PATH + os.sep + 'config.yml')
+    if os.path.exists(config_yml_path):
+        try:
+            new_config = load_config(config_yml_path)
+            app.config.update(new_config)
+        except Exception as e:
+            print(f"Failed to load config from {config_yml_path}: {e}")
+    if app.debug:
+        print(f"Config refreshed from {config_yml_path}")
+        for key in app.config:
+            if key not in old_config:
+                print(f"Added new config key: {key}")
+            elif app.config[key] != old_config[key]:
+                print(f"Updated config key: {key}")
+    return app.config
 
 
 @app.route('/api/app/<app_name>/update', methods=['POST', 'GET'])

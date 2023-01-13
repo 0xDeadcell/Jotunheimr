@@ -1,4 +1,5 @@
 from flask import Flask
+import yaml
 import os
 
 
@@ -14,10 +15,28 @@ def search_certificates():
                 key_path = os.path.join(root, file)
     return cert_path, key_path
 
+# get operating system
+def get_os():
+    if os.name == 'nt':
+        return 'windows'
+    else:
+        return 'linux'
 
+
+# load config.yml file
+def load_config(config_path):
+    config = {}
+    with open(config_path, 'r', encoding='utf-8') as ymlfile:
+        try:
+            config = yaml.safe_load(ymlfile)
+        except yaml.YAMLError as exc:
+            print(exc)
+    return config
+
+# Create the application instance
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
 app.search_certificates = search_certificates
-app.config_yml = os.path.normpath(os.path.dirname(os.path.abspath(__file__)) + os.sep + '..' + os.sep + 'config.yml')
+
 # Import the views
 from app import views
