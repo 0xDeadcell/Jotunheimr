@@ -1,4 +1,5 @@
 from flask import Flask, request, render_template, jsonify, url_for, redirect, send_from_directory
+from app import app
 from werkzeug.utils import secure_filename
 import subprocess
 import json
@@ -8,10 +9,6 @@ import re
 
 # Set the path to the directory containing this file
 ROOT_PATH = os.path.dirname(os.path.abspath(__file__))
-
-# Create the Flask app
-app = Flask(__name__)
-app.config.from_pyfile('config.py')
 
 # Set the allowed extensions for files
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -117,8 +114,11 @@ def update_app_details(app_name):
         app_desc = request.args.get('description', None)
         app_data['desc'] = app_desc
     if request.args.get('name', None) is not None:
+        old_app_folder = os.path.normpath(os.path.join(ROOT_PATH, f'assets/apps', app_name))
         app_name = request.args.get('name', None)
         app_data['name'] = app_name
+        new_app_folder = os.path.normpath(os.path.join(ROOT_PATH, f'assets/apps', app_name))
+        os.rename(old_app_folder, new_app_folder)
     with open(os.path.normpath(os.path.join(ROOT_PATH, f'assets/apps', app_name, 'details.json')), 'w') as f:
         f.write(json.dumps(app_data))
     return redirect(url_for('render_app', app_name=app_name))
@@ -231,7 +231,3 @@ def run_script(app_name):
         print(f"Ran script for {app_name} at {script_path}:\nSTDOUT:\n{out.decode('utf-8')}\nSTDERR:\n{err.decode('utf-8')}")
 
     return redirect(url_for('render_app', app_name=app_name))
-
-
-if __name__ == '__main__':
-    app.run(port=80)

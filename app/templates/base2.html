@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Dashboard | Jotunheimr</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/homer.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body class="vsc-initialized">
+    <div id="app-mount" data-v-app="">
+      <div id="app" class="theme-default page-default is-dark">
+        <style>
+          :root,
+          body #app.is-light {
+            --highlight-primary: #3367d6;
+            --highlight-secondary: #4285f4;
+            --highlight-hover: #5a95f5;
+            --background: #f5f5f5;
+            --card-background: #ffffff;
+            --text: #363636;
+            --text-header: #ffffff;
+            --text-title: #303030;
+            --text-subtitle: #424242;
+            --card-shadow: rgba(0, 0, 0, 0.1);
+            --link: #3273dc;
+            --link-hover: #363636;
+            --background-image: initial
+          }
+  
+          @media (prefers-color-scheme: light),
+          (prefers-color-scheme: no-preference) {
+  
+            :root,
+            body #app {
+              --highlight-primary: #3367d6;
+              --highlight-secondary: #4285f4;
+              --highlight-hover: #5a95f5;
+              --background: #f5f5f5;
+              --card-background: #ffffff;
+              --text: #363636;
+              --text-header: #ffffff;
+              --text-title: #303030;
+              --text-subtitle: #424242;
+              --card-shadow: rgba(0, 0, 0, 0.1);
+              --link: #3273dc;
+              --link-hover: #363636;
+              --background-image: initial
+            }
+          }
+  
+          body #app.is-dark {
+            --highlight-primary: #3367d6;
+            --highlight-secondary: #4285f4;
+            --highlight-hover: #5a95f5;
+            --background: #131313;
+            --card-background: #2b2b2b;
+            --text: #eaeaea;
+            --text-header: #ffffff;
+            --text-title: #fafafa;
+            --text-subtitle: #f5f5f5;
+            --card-shadow: rgba(0, 0, 0, 0.4);
+            --link: #3273dc;
+            --link-hover: #ffdd57;
+            --background-image: initial
+          }
+  
+          @media (prefers-color-scheme: dark) {
+  
+            :root,
+            body #app {
+              --highlight-primary: #3367d6;
+              --highlight-secondary: #4285f4;
+              --highlight-hover: #5a95f5;
+              --background: #131313;
+              --card-background: #2b2b2b;
+              --text: #eaeaea;
+              --text-header: #ffffff;
+              --text-title: #fafafa;
+              --text-subtitle: #f5f5f5;
+              --card-shadow: rgba(0, 0, 0, 0.4);
+              --link: #3273dc;
+              --link-hover: #ffdd57;
+              --background-image: initial
+            }
+          }
+        </style>
+        <div id="bighead">
+          <section class="first-line">
+            <div class="container">
+              <div class="logo">
+                <a href="#">
+                  <img src="logo.png" alt="dashboard logo">
+                </a>
+                <!---->
+              </div>
+              <div class="dashboard-title no-logo">
+                <span class="headline">Homer</span>
+                <h1>Demo dashboard</h1>
+              </div>
+            </div>
+          </section>
+          <div class="container-fluid">
+            <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+                <div class="navbar-brand">
+                  <a role="button" aria-label="menu" aria-expanded="false" class="navbar-burger">
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                  </a>
+                </div>
+                <div class="navbar-menu">
+                  <div class="navbar-start">
+                    <a class="navbar-item" rel="noreferrer" href="https://github.com/bastienwirtz/homer" target="_blank">
+                      <i class="fa-fw fab fa-github mr-2"></i> Contribute </a>
+                    <a class="navbar-item" rel="noreferrer" href="https://github.com/bastienwirtz/homer/blob/main/README.md#table-of-contents">
+                      <i class="fa-fw fas fa-book mr-2"></i> Documentation </a>
+                    <a class="navbar-item" rel="noreferrer" href="#additional-page">
+                      <i class="fa-fw fas fa-file-alt mr-2"></i> another page! </a>
+                  </div>
+                  <div class="navbar-end">
+                    <a aria-label="Toggle dark mode" class="navbar-item is-inline-block-mobile">
+                      <i class="fas fa-adjust fa-fw" title="Auto-switch"></i>
+                    </a>
+                    <a class="navbar-item is-inline-block-mobile">
+                      <span>
+                        <i class="fas fa-fw fa-list"></i>
+                      </span>
+                    </a>
+                    <div class="search-bar navbar-item is-inline-block-mobile">
+                      <label for="search" class="search-label"></label>
+                      <input type="text">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </nav>
+          </div>
+        </div>
+        <section id="main-section" class="section">
+            {% block content %}{% endblock %}
+        </section>
+        <footer class="footer">
+          <div class="container">
+            <div class="content has-text-centered">
+              <p>Created with <span class="has-text-danger">❤️</span> with <a href="https://bulma.io/">Bulma</a>, <a href="https://vuejs.org/">Vue.js</a> &amp; <a href="https://fontawesome.com/">font awesome</a> // Fork me on <a href="https://github.com/bastienwirtz/homer">
+                  <i class="fab fa-github-alt"></i>
+                </a>
+              </p>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>
+<script>
+    var addAppLink = document.getElementById('add-app-link');
+    var addAppForm = document.getElementById('add-app-form');
+
+    addAppLink.onclick = function() {
+        addAppForm.style.display = "block";
+    }
+</script>
