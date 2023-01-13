@@ -3,53 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Application Dashboard | Jotunheimr</title>
+    <title>{{ title }} - {{ subtitle }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/homer.css') }}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
-<body>
-    <header>
-        <div class="logo">
-            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Jotunheimr logo">
-        </div>
-        <nav>
-            <ul>
-                <li><a href="{{ url_for('index') }}">Home</a></li>
-                <li>
-                    <a href="#" id="add-app-link">Add App</a>
-                    <div id="add-app-form">
-                        <form action="{{ url_for('add_app') }}" method="POST" enctype="multipart/form-data">
-                            <label for="app_name">Name:</label>
-                            <input type="text" id="app_name" name="app_name">
-                            <br>
-                            <label for="app_image">Image:</label>
-                            <input type="file" id="app_image" name="app_image">
-                            <br>
-                            <label for="app_desc">Description:</label>
-                            <input type="text" id="app_desc" name="app_desc">
-                            <br>
-                            <label for="app_tag">Tag:</label>
-                            <input type="text" id="app_tag" name="app_tag">
-                            <br>
-                            <input type="submit" value="Add">
-                        </form>
+<body class="vsc-initialized">
+    <div id="app-mount" data-v-app="">
+      <div id="app" class="theme-default page-default is-dark">
+        <style>
+          :root,
+          body #app.is-light {
+            --highlight-primary: #3367d6;
+            --highlight-secondary: #4285f4;
+            --highlight-hover: #5a95f5;
+            --background: #f5f5f5;
+            --card-background: #ffffff;
+            --text: #363636;
+            --text-header: #ffffff;
+            --text-title: #303030;
+            --text-subtitle: #424242;
+            --card-shadow: rgba(0, 0, 0, 0.1);
+            --link: #3273dc;
+            --link-hover: #363636;
+            --background-image: initial
+          }
+  
+          @media (prefers-color-scheme: light),
+          (prefers-color-scheme: no-preference) {
+  
+            :root,
+            body #app {
+              --highlight-primary: #3367d6;
+              --highlight-secondary: #4285f4;
+              --highlight-hover: #5a95f5;
+              --background: #f5f5f5;
+              --card-background: #ffffff;
+              --text: #363636;
+              --text-header: #ffffff;
+              --text-title: #303030;
+              --text-subtitle: #424242;
+              --card-shadow: rgba(0, 0, 0, 0.1);
+              --link: #3273dc;
+              --link-hover: #363636;
+              --background-image: initial
+            }
+          }
+  
+          body #app.is-dark {
+            --highlight-primary: #3367d6;
+            --highlight-secondary: #4285f4;
+            --highlight-hover: #5a95f5;
+            --background: #131313;
+            --card-background: #2b2b2b;
+            --text: #eaeaea;
+            --text-header: #ffffff;
+            --text-title: #fafafa;
+            --text-subtitle: #f5f5f5;
+            --card-shadow: rgba(0, 0, 0, 0.4);
+            --link: #3273dc;
+            --link-hover: #ffdd57;
+            --background-image: initial
+          }
+  
+          @media (prefers-color-scheme: dark) {
+  
+            :root,
+            body #app {
+              --highlight-primary: #3367d6;
+              --highlight-secondary: #4285f4;
+              --highlight-hover: #5a95f5;
+              --background: #131313;
+              --card-background: #2b2b2b;
+              --text: #eaeaea;
+              --text-header: #ffffff;
+              --text-title: #fafafa;
+              --text-subtitle: #f5f5f5;
+              --card-shadow: rgba(0, 0, 0, 0.4);
+              --link: #3273dc;
+              --link-hover: #ffdd57;
+              --background-image: initial
+            }
+          }
+        </style>
+        <div id="bighead">
+          <section class="first-line">
+            <div class="container">
+              <div class="logo">
+                <a href="#">
+                  <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Jotunheimr logo">
+                </a>
+                <!---->
+              </div>
+              <div class="dashboard-title no-logo">
+                <span class="headline">{{ title }}</span>
+                <h1>{{ subtitle }}</h1>
+              </div>
+            </div>
+          </section>
+          <div class="container-fluid">
+            <nav class="navbar" role="navigation" aria-label="main navigation">
+              <div class="container">
+                <div class="navbar-brand">
+                  <a role="button" aria-label="menu" aria-expanded="false" class="navbar-burger">
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                  </a>
+                </div>
+                <div class="navbar-menu">
+                  <div class="navbar-start">
+                    <a class="navbar-item" rel="noreferrer" href="/" target="_blank">
+                      <i class="fa-fw fas fa-book mr-2"></i> Home </a>
+                    <a class="navbar-item" rel="noreferrer" href="https://github.com/0xdeadcell/Jotunheimr">
+                      <i class="fa-fw fab fa-github mr-2"></i> Github </a>
+                  </div>
+                  <div class="navbar-end">
+                    <a aria-label="Toggle dark mode" class="navbar-item is-inline-block-mobile">
+                      <i class="fas fa-adjust fa-fw" title="Auto-switch"></i>
+                    </a>
+                    <a class="navbar-item is-inline-block-mobile">
+                      <span>
+                        <i class="fas fa-fw fa-list"></i>
+                      </span>
+                    </a>
+                    <div class="search-bar navbar-item is-inline-block-mobile">
+                      <label for="search" class="search-label"></label>
+                      <input type="text">
                     </div>
-                </li>
-            </ul>
-        </nav>
-    </header>
-    {% block content %}{% endblock %}
-    <footer>
-        <p>Copyright © 2023 Jotunheimr</p>
-    </footer>
-</body>
+                  </div>
+                </div>
+              </div>
+            </nav>
+          </div>
+        </div>
+        <section id="main-section" class="section">
+            {% block content %}{% endblock %}
+        </section>
+        <footer class="footer">
+          <div class="container">
+            <div class="content has-text-centered">
+              <p>Made with <span class="has-text-danger">❤️</span>, by <a href="https://github.com/0xdeadcell">a 16 year old developer</a> // Fork me on <a href="https://github.com/0xdeadcell/Jotunheimr">
+                  <i class="fab fa-github-alt"></i>
+                </a>
+              </p>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
+  </body>
 </html>
-<script>
-    var addAppLink = document.getElementById('add-app-link');
-    var addAppForm = document.getElementById('add-app-form');
-
-    addAppLink.onclick = function() {
-        addAppForm.style.display = "block";
-    }
-</script>

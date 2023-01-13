@@ -1,10 +1,11 @@
+import yaml
 import os
 
 # Secret key for secure sessions
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # File upload settings
-UPLOAD_FOLDER = 'assets/'
+UPLOAD_FOLDER = 'app/assets/files'
 ALLOWED_EXTENSIONS = {'py'}
 
 # Database connection settings
@@ -16,3 +17,22 @@ DEBUG = os.environ.get('DEBUG', True)
 TESTING = os.environ.get('TESTING', True)
 TEMPLATES_AUTO_RELOAD = os.environ.get('TEMPLATES_AUTO_RELOAD', True)
 SEND_FILE_MAX_AGE_DEFAULT = os.environ.get('SEND_FILE_MAX_AGE_DEFAULT', 0)
+# Load info from the config.yml file
+# Path: /config.yml
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+config = {}
+with open(ROOT_DIR + os.sep + 'config.yml', 'r', encoding='utf-8') as ymlfile:
+    try:
+        config = yaml.safe_load(ymlfile)
+    except yaml.YAMLError as exc:
+        print(exc)
+
+TITLE = config.get('title', "Jotunheimr")
+SUBTITLE = config.get('subtitle', "Application Dashboard")
+LOGO = config.get('logo', "app/assets/tools/solaire.png")
+HEADER = config.get('header', True)
+USER_CSS_LIST = config.get('stylesheet', ["app/assets/css/user.css"])
+for USER_CSS in USER_CSS_LIST:
+    if os.path.exists(USER_CSS):
+        USER_CSS = os.path.join(os.path.dirname(__file__), USER_CSS)
+        print(f"[+] Found user stylesheet: {USER_CSS}")

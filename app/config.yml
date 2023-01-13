@@ -1,13 +1,13 @@
 ---
-title: "Asgard's Portal"
-subtitle: "Homer"
-logo: "assets/tools/solaire.png"
+title: "Jotunheimr"
+subtitle: "Asgard's Dashboard"
+logo: "app/assets/tools/solaire.png"
 
 header: true
 footer: '<p>Theme made with <span class="has-text-danger">❤️</span> by <a href="https://github.com/0xdeadcell">0xdeadcell</a></p>' # Set false if you want to hide it.
 
 stylesheet:
-  - "assets/custom.css"
+  - "app/assets/custom.css"
 
 columns: "4" # You can change this to any number that is a factor of 12: (1, 2, 3, 4, 6, 12)
 theme: default

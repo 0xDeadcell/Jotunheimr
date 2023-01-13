@@ -1,48 +1,25 @@
-{% extends 'base2.html' %}
+{% extends 'base.html' %}
 
 {% block content %}
 <div class="container">
     <!---->
     <!---->
     <div>
-      <article class="message is-dark">
+      <!-- <article class="message is-dark">
         <div class="message-header">
           <p>
-            <!----> 👋 Welcome !
+             👋 Welcome !
           </p>
         </div>
         <div class="message-body">This demo page shows an overview of Homer possibilities. Feel free to click anywhere! <br> Find more information on <a href="https://github.com/bastienwirtz/homer">github.com/bastienwirtz/homer</a>
         </div>
-      </article>
+      </article> -->
       <!---->
       <div class="columns is-multiline layout-vertical">
-        <div class="column is-4">
+        <!--<div class="column is-4">
             <h2 class="group-title">
                 <i class="fa-fw fas fa-cloud"></i> My apps
             </h2>
-            {% for app in apps if app.tag == tag %}
-                <div>
-                    <div class="card">
-                        <a href="{{ url_for('render_app', app_name=app.name) }}" rel="noreferrer">
-                            <div class="card-content">
-                                <div class="media no-subtitle">
-                                    <div class="media-left">
-                                        <figure class="image is-48x48">
-                                            <img src="{{ url_for('get_app_image', app_name=app.name) }}" alt="App logo">
-                                        </figure>
-                                    </div>
-                                    <div class="media-content">
-                                        <p class="title is-4">{{ app.name }}</p>
-                                        <p class="subtitle is-6">{{ app.desc }} </p>
-                                        </div>
-                                        <div class="status enabled">enabled</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            {% endfor %}
         </div>
         <div class="column is-4">
           <h2 class="group-title">
@@ -53,7 +30,36 @@
           <h2 class="group-title">
             <i class="fa-fw fas fa-solid fa-arrow-up-right-from-square"></i> interesting links
           </h2>
-        </div>
+        </div>-->
+        {% for tag in app_tags %}
+            <div class="column is-4">
+                <h2 class="group-title">
+                    <i class="fa-fw fa-solid fa-screwdriver-wrench"></i> {{ tag }}
+                </h2>
+                {% for app in apps if app.tag == tag %}
+                    <div>
+                        <div class="card">
+                            <a href="{{ url_for('render_app', app_name=app.name) }}" rel="noreferrer">
+                                <div class="card-content">
+                                    <div class="media no-subtitle">
+                                        <div class="media-left">
+                                            <figure class="image is-48x48">
+                                                <img src="{{ url_for('get_app_image', app_name=app.name) }}" alt="App logo">
+                                            </figure>
+                                        </div>
+                                        <div class="media-content">
+                                            <p class="title is-4">{{ app.name.title() }}</p>
+                                            <p class="subtitle is-6">{{ app.desc }}</p>
+                                        </div>
+                                        <div class="status enabled">Enabled</div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
       </div>
     </div>
   </div>

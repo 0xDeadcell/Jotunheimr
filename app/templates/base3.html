@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Dashboard | Jotunheimr</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/homer.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Jotunheimr logo">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li>
+                    <a href="#" id="add-app-link">Add App</a>
+                    <div id="add-app-form">
+                        <form action="{{ url_for('add_app') }}" method="POST" enctype="multipart/form-data">
+                            <label for="app_name">Name:</label>
+                            <input type="text" id="app_name" name="app_name">
+                            <br>
+                            <label for="app_image">Image:</label>
+                            <input type="file" id="app_image" name="app_image">
+                            <br>
+                            <label for="app_desc">Description:</label>
+                            <input type="text" id="app_desc" name="app_desc">
+                            <br>
+                            <label for="app_tag">Tag:</label>
+                            <input type="text" id="app_tag" name="app_tag">
+                            <br>
+                            <input type="submit" value="Add">
+                        </form>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    {% block content %}{% endblock %}
+    <footer>
+        <p>Copyright © 2023 Jotunheimr</p>
+    </footer>
+</body>
+</html>
+<script>
+    var addAppLink = document.getElementById('add-app-link');
+    var addAppForm = document.getElementById('add-app-form');
+
+    addAppLink.onclick = function() {
+        addAppForm.style.display = "block";
+    }
+</script>

@@ -22,6 +22,11 @@ def allowed_file(filename):
 @app.route('/')
 def index():
     # Get the list of apps
+    title = app.config.get('TITLE', "Jotunheimr")
+    subtitle = app.config.get('SUBTITLE', "Application Dashboard")
+    logo = app.config.get('LOGO', "app/assets/tools/solaire.png")
+    header = app.config.get('HEADER', True)
+    user_css = app.config.get('USER_CSS', "app/assets/css/user.css")
     apps = []
     app_tags = []
     for app_name in os.listdir(os.path.normpath(os.path.join(ROOT_PATH, 'assets/apps'))):
@@ -29,7 +34,7 @@ def index():
         apps.append(app_data)
         if (app_data.get('tag', None) is not None) and (app_data.get('tag', None) not in app_tags):
             app_tags.append(app_data['tag'])
-    return render_template('index.html', apps=apps, app_tags=app_tags)
+    return render_template('index.html', apps=apps, app_tags=app_tags, title=title, subtitle=subtitle, logo=logo, header=header, user_css=user_css)
 
 # default route for 404 errors
 @app.errorhandler(404)
@@ -55,7 +60,7 @@ def render_app(app_name):
 def add_app():
     app_name = re.sub(r'\W+', '', request.form['app_name']).lower()
     app_desc = request.form['app_desc']
-    app_tag = request.form['app_tag']
+    app_tag = request.form['app_tag'].title()
     app_image = request.files['app_image']
     default_image = None
     if app_name == '':
