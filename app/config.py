@@ -21,7 +21,7 @@ SEND_FILE_MAX_AGE_DEFAULT = os.environ.get('SEND_FILE_MAX_AGE_DEFAULT', 0)
 # Path: /config.yml
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_YML_PATH = os.path.normpath(os.path.dirname(os.path.abspath(__file__)) + os.sep + 'config.yml')
-print(f"[*] Loading config from: {CONFIG_YML_PATH}")
+#print(f"[*] Loading config from: {CONFIG_YML_PATH}")
 
 """
 config = {}

@@ -34,9 +34,11 @@ def load_config(config_path):
     return config
 
 # Create the application instance
+ROOT_PATH = os.path.dirname(os.path.abspath(__file__))
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
 app.search_certificates = search_certificates
+app.config.update(load_config(os.path.join(ROOT_PATH, 'config.yml')))
 
 # Import the views
 from app import views

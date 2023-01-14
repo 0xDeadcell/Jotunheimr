@@ -2,6 +2,7 @@
 title: "Jotunheimr"
 subtitle: "Asgard's Dashboard"
 logo: "/static/img/solaire.png"
+https: true # Set to true if you want to use https, uses self-signed certificate
 
 header: true
 footer: '<p>Theme made with <span class="has-text-danger">❤️</span> by <a href="https://github.com/0xdeadcell">0xdeadcell</a></p>' # Set false if you want to hide it.

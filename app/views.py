@@ -29,7 +29,7 @@ def index():
     logo = app.config.get('logo', "/static/img/logo.png")
     header = app.config.get('header', True)
     user_css = app.config.get('stylesheet', "app/assets/css/user.css")
-    print(f"[+] User CSS: {user_css}")
+    #print(f"[+] User CSS: {user_css}")
     apps = []
     app_tags = []
     for app_name in os.listdir(os.path.normpath(os.path.join(ROOT_PATH, 'assets/apps'))):
@@ -38,16 +38,6 @@ def index():
         if (app_data.get('tag', None) is not None) and (app_data.get('tag', None) not in app_tags):
             app_tags.append(app_data['tag'])
     return render_template('index.html', apps=apps, app_tags=app_tags, title=title, subtitle=subtitle, logo=logo, header=header, user_css=user_css)
-
-
-# default route for 404 errors
-@app.errorhandler(404)
-def page_not_found(e):
-    # note that we set the 404 status explicitly
-    logo = app.config.get('logo', "app/assets/tools/logo.png")
-    if app.debug:
-        print(f"Page not found: {request.url}")
-    return render_template('404.html')
 
 
 @app.route('/app/<app_name>')
@@ -136,11 +126,13 @@ def refresh_config():
             print(f"Failed to load config from {config_yml_path}: {e}")
     if app.debug:
         print(f"Config refreshed from {config_yml_path}")
+        # Check if the values have changed
         for key in app.config:
-            if key not in old_config:
-                print(f"Added new config key: {key}")
-            elif app.config[key] != old_config[key]:
-                print(f"Updated config key: {key}")
+            try:
+                if old_config[key] != app.config[key]:
+                    print(f"[+] Config value changed: {key}: {old_config[key]} -> {app.config[key]}")
+            except KeyError:
+                print(f"[*] Config value removed: {key}: {old_config[key]}")
     return app.config
 
 
@@ -277,3 +269,20 @@ def run_script(app_name):
         print(f"Ran script for {app_name} at {script_path}:\nSTDOUT:\n{out.decode('utf-8')}\nSTDERR:\n{err.decode('utf-8')}")
 
     return redirect(url_for('render_app', app_name=app_name))
+
+# default route for 404 errors
+@app.errorhandler(404)
+def page_not_found(e):
+    # note that we set the 404 status explicitly
+    logo = app.config.get('logo', "app/assets/tools/logo.png")
+    if app.debug:
+        print(f"Page not found: {request.url}")
+    return render_template('404.html')
+
+# upgrade http to https
+@app.before_request
+def before_request():
+    if not request.is_secure:
+        url = request.url.replace('http://', 'https://', 1)
+        code = 301
+        return redirect(url, code=code, port=80)
