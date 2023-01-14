@@ -26,7 +26,7 @@ def index():
     # Get the list of apps
     title = app.config.get('title', "Jotunheimr")
     subtitle = app.config.get('subtitle', "Application Dashboard")
-    logo = app.config.get('logo', "app/assets/tools/solaire.png")
+    logo = app.config.get('logo', "/static/img/logo.png")
     header = app.config.get('header', True)
     user_css = app.config.get('stylesheet', "app/assets/css/user.css")
     print(f"[+] User CSS: {user_css}")
@@ -39,10 +39,12 @@ def index():
             app_tags.append(app_data['tag'])
     return render_template('index.html', apps=apps, app_tags=app_tags, title=title, subtitle=subtitle, logo=logo, header=header, user_css=user_css)
 
+
 # default route for 404 errors
 @app.errorhandler(404)
 def page_not_found(e):
     # note that we set the 404 status explicitly
+    logo = app.config.get('logo', "app/assets/tools/logo.png")
     if app.debug:
         print(f"Page not found: {request.url}")
     return render_template('404.html')
@@ -50,13 +52,21 @@ def page_not_found(e):
 
 @app.route('/app/<app_name>')
 def render_app(app_name):
+    refresh_config()
+    # note that we set the 404 status explicitly
+    title = app.config.get('title', "Jotunheimr")
+    subtitle = app_name.title()
+    logo = app.config.get('logo', "/static/img/logo.png")
+    header = app.config.get('header', True)
+    user_css = app.config.get('stylesheet', "app/assets/css/user.css")
+
     # Check that the app exists
     if not os.path.exists(os.path.normpath(os.path.join(ROOT_PATH, f'assets/apps', app_name))):
         return render_template('404.html')
     if not os.path.exists(os.path.normpath(os.path.join(ROOT_PATH, f'assets/apps', app_name, 'details.json'))):
         return render_template('404.html')
     app_data = get_app_details(app_name)
-    return render_template('user_app_template.html', app_data=app_data)
+    return render_template('user_app_template.html', app_data=app_data, title=title, subtitle=subtitle, logo=logo, header=header, user_css=user_css)
 
 
 @app.route('/', methods=['POST'])
@@ -93,7 +103,11 @@ def add_app():
     if not default_image:
         app_image.save(os.path.normpath(os.path.join(app_folder, 'user_logo.png')))
     else:
-        os.symlink(os.path.normpath(os.path.join(ROOT_PATH, default_image)), os.path.normpath(os.path.join(app_folder, 'user_logo.png')))
+        # Copy the default image to the app folder
+        with open(os.path.normpath(os.path.join(app_folder, 'user_logo.png')), 'wb') as f:
+            with open(os.path.normpath(os.path.join(ROOT_PATH, default_image)), 'rb') as f2:
+                f.write(f2.read())
+    
     # Save the details of the app to a json file
     with open(os.path.normpath(os.path.join(app_folder, 'details.json')), 'w') as f:
         f.write(json.dumps({
@@ -136,11 +150,14 @@ def update_app_details(app_name):
         return render_template('404.html')
     with open(os.path.normpath(os.path.join(ROOT_PATH, f'assets/apps', app_name, 'details.json')), 'r') as f:
         app_data = json.loads(f.read())
+    if request.args.get('image', None) is not None:
+        app_image = request.args.get('image')
+        app_data['image'] = app_image
     if request.args.get('tag', None) is not None:
         app_tag = request.args.get('tag', None)
         app_data['tag'] = app_tag
-    if request.args.get('description', None) is not None:
-        app_desc = request.args.get('description', None)
+    if request.args.get('desc', None) is not None:
+        app_desc = request.args.get('desc', None)
         app_data['desc'] = app_desc
     if request.args.get('name', None) is not None:
         old_app_folder = os.path.normpath(os.path.join(ROOT_PATH, f'assets/apps', app_name))
