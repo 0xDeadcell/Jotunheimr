@@ -32,34 +32,98 @@
           </h2>
         </div>-->
         {% for tag in app_tags %}
-            <div class="column is-4">
+            <div class="app-tag-wrapper column is-4">
                 <h2 class="group-title">
-                    <i class="fa-fw fa-solid fa-screwdriver-wrench"></i> {{ tag }}
+                    <i class="fa-fw fa-solid fa-screwdriver-wrench"></i> <span class="app-tag">{{ tag }}</span>
                 </h2>
                 {% for app in apps if app.tag == tag %}
-                    <div>
+                    <div class="card-wrapper">
                         <div class="card">
                             <a href="{{ url_for('render_app', app_name=app.name) }}" rel="noreferrer">
                                 <div class="card-content">
                                     <div class="media no-subtitle">
                                         <div class="media-left">
                                             <figure class="image is-48x48">
-                                                <img src="{{ url_for('get_app_image', app_name=app.name) }}" alt="App logo">
+                                                <img class="app-logo" src="{{ url_for('get_app_image', app_name=app.name) }}" alt="App logo">
                                             </figure>
                                         </div>
                                         <div class="media-content">
-                                            <p class="title is-4">{{ app.name.title() }}</p>
-                                            <p class="subtitle is-6">{{ app.desc }}</p>
+                                            <p class="app-name title is-4">{{ app.name.title() }}</p>
+                                            <p class="app-desc subtitle is-6">{{ app.desc }}</p>
+                                            <input type="hidden" class="app-custom-url" value="{{ app.custom_url }}">
+                                            <input type="hidden" class="app-enable-custom-url" value="{{ app.enable_custom_url }}">
                                         </div>
                                         <div class="status enabled">Enabled</div>
                                     </div>
                                 </div>
                             </a>
                         </div>
+                        <div class="app-actions-wrapper d-none">
+                            <div class="app-actions">
+                                <div class="left-side">
+                                    <div class="delete-btn-wrapper">
+                                        <form action="{{ url_for('delete_app', app_name=app.name) }}" method="POST">
+                                            <div class="delete-btn" aria-label="Delete App">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <a href="{{ url_for('render_app', app_name=app.name) }}" class="btn-padding"></a>
+                                </div>
+                                <div class="right-side">
+                                    <a href="{{ url_for('render_app', app_name=app.name) }}" class="btn-padding"></a>
+                                    <div class="update-btn-wrapper">
+                                        <div class="update-btn" aria-label="Update App">
+                                            <i class="fas fa-edit"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--<div class="d-none">
+                            <form action="{{ url_for('delete_app', app_name=app.name) }}" method="POST">
+                                <input type="submit" value="Delete App">
+                            </form>
+                        </div>-->
                     </div>
                 {% endfor %}
             </div>
         {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="modal" id="updateAppModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="" method="POST" enctype="multipart/form-data">
+          <div class="modal-body">
+            <label for="name">Name:</label>
+            <input type="text" id="updateName" name="name" value="">
+            <br>
+            <label for="image">Image (optional):</label>
+            <input type="file" id="updateImage" name="image">
+            <br>
+            <label for="desc">Description:</label>
+            <input type="text" id="updateDesc" name="desc" value="">
+            <br>
+            <label for="tag">Tag:</label>
+            <input type="text" id="updateTag" name="tag" value="">
+            <br>
+            <label for="custom_url">Custom URL (optional):</label>
+            <input type="text" id="updateCustomUrl" name="custom_url" value="" placeholder="https://{{ request.host }}/{{ custom_url }}" disabled>
+            <br>
+            <label for="enable_custom_url">Enable Custom URL:</label>
+            <input type="checkbox" id="updateEnableCustomUrl" name="enable_custom_url">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button id="updateAppModalSubmit" type="submit" class="btn btn-primary">Update App</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>

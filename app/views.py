@@ -1,7 +1,9 @@
-from flask import Flask, request, render_template, jsonify, url_for, redirect, send_from_directory
+from flask import Flask, request, render_template, jsonify, url_for, redirect, send_from_directory, send_file
 from app import app, load_config
 from werkzeug.utils import secure_filename
+from PIL import Image
 import subprocess
+import mimetypes
 import json
 import os
 import re
@@ -13,6 +15,7 @@ print(f"[+] Root path: {ROOT_PATH}")
 
 # Set the allowed extensions for files
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+DEFAULT_LOGO = 'assets/tools/asterisk.png'
 
 
 def allowed_file(filename):
@@ -31,13 +34,14 @@ def index():
     user_css = app.config.get('stylesheet', "app/assets/css/user.css")
     #print(f"[+] User CSS: {user_css}")
     apps = []
+    app_data = {}
     app_tags = []
     for app_name in os.listdir(os.path.normpath(os.path.join(ROOT_PATH, 'assets/apps'))):
         app_data = get_app_details(app_name)
         apps.append(app_data)
         if (app_data.get('tag', None) is not None) and (app_data.get('tag', None) not in app_tags):
             app_tags.append(app_data['tag'])
-    return render_template('index.html', apps=apps, app_tags=app_tags, title=title, subtitle=subtitle, logo=logo, header=header, user_css=user_css)
+    return render_template('index.html', apps=apps, app_tags=app_tags, title=title, subtitle=subtitle, logo=logo, header=header, user_css=user_css, app_data=app_data)
 
 
 @app.route('/app/<app_name>')
@@ -56,23 +60,34 @@ def render_app(app_name):
     if not os.path.exists(os.path.normpath(os.path.join(ROOT_PATH, f'assets/apps', app_name, 'details.json'))):
         return render_template('404.html')
     app_data = get_app_details(app_name)
-    return render_template('user_app_template.html', app_data=app_data, title=title, subtitle=subtitle, logo=logo, header=header, user_css=user_css)
+    # if the app has a custom url, and it's enabled, redirect to that
+    if (app_data.get('custom_url', None) is not None) and (app_data.get('enable_custom_url', False) is not False):
+        print(f"[!] Redirecting to custom url: {app_data['custom_url']}")
+        return redirect(app_data['custom_url'])
+    else:
+        return render_template('user_app_template.html', app_data=app_data, title=title, subtitle=subtitle, logo=logo, header=header, user_css=user_css)
 
 
 @app.route('/', methods=['POST'])
 def add_app():
     app_name = re.sub(r'\W+', '', request.form['app_name']).lower()
-    app_desc = request.form['app_desc']
-    app_tag = request.form['app_tag'].title()
+    app_desc = request.form.get('app_desc', '')
+    app_tag = request.form.get('app_tag', 'Misc').title()
+    app_custom_url = request.form.get('app_custom_url', '')
+    app_enable_custom_url = request.form.get('app_enable_custom_url', False)
+    if app_tag.strip() == '':
+        app_tag = 'Misc'
     app_image = request.files['app_image']
     default_image = None
     if app_name == '':
         if app.debug:
             print(f"Failed to create app: No valid app name provided")
         return redirect(url_for('index'))
+    
+    # using the default image
     if not app_image:
         if app.debug:
-            print("No image provided")
+            print("[!] No image provided, using default image")
         # check to see if the image is in assets/tools/<app_name> first, if so use that
         # otherwise use the default image at assets/tools/asterisk.png
         if os.path.exists(os.path.normpath(os.path.join(ROOT_PATH, f'assets/tools/{app_name}.png'))):
@@ -80,9 +95,10 @@ def add_app():
             default_image = f'assets/tools/{app_name}.png'
         else:
             print("Using default image")
-            default_image = 'assets/tools/asterisk.png'
+            default_image = DEFAULT_LOGO
+    # check to see if the filetype is valid
     elif not allowed_file(app_image.filename):
-        print(f"Failed to create app {app_name}: Invalid file type, must be .png, .jpg, .jpeg or .gif")
+        print(f"Failed to create app {app_name}: Invalid file type ({app_image.filename}), must be: {ALLOWED_EXTENSIONS}")
         return redirect(url_for('index'))
     
     app_folder = os.path.normpath(os.path.join(ROOT_PATH, 'assets/apps', app_name))
@@ -91,8 +107,11 @@ def add_app():
         return redirect(url_for('index'))
     os.makedirs(app_folder, exist_ok=True)
     if not default_image:
-        app_image.save(os.path.normpath(os.path.join(app_folder, 'user_logo.png')))
+        # save the image depending on the file type
+        app_image.save(os.path.normpath(os.path.join(app_folder, 'user_logo' + os.path.splitext(app_image.filename)[1])))
     else:
+        # default images *should* be .png
+        app_image.filename = 'user_logo.png'
         # Copy the default image to the app folder
         with open(os.path.normpath(os.path.join(app_folder, 'user_logo.png')), 'wb') as f:
             with open(os.path.normpath(os.path.join(ROOT_PATH, default_image)), 'rb') as f2:
@@ -102,15 +121,16 @@ def add_app():
     with open(os.path.normpath(os.path.join(app_folder, 'details.json')), 'w') as f:
         f.write(json.dumps({
             'name': app_name,
-            'image': os.path.join(app_folder, 'user_logo.png'),
+            'image': os.path.join(app_folder, 'user_logo' + os.path.splitext(app_image.filename)[1]),
             'desc': app_desc,
             'tag': app_tag,
+            'custom_url': app_custom_url if app_enable_custom_url else "",
+            'enable_custom_url': app_enable_custom_url,
     }))
     if app.debug:
-        print(f"Created app {app_name}:\nFolder: {app_folder}\nImage: {app_image.filename}\nDescription: {app_desc}\nTag: {app_tag}")
+        print(f"Created app {app_name}:\nFolder: {app_folder}\nImage: {app_image.filename}\nDescription: {app_desc}\nTag: {app_tag}\nCustom URL: {app_custom_url}\nEnable Custom URL: {app_enable_custom_url}")
     
-    print(app_name)
-    return redirect(url_for('render_app', app_name=app_name))
+    return redirect(url_for('index'))
 
 # Refresh the config file
 @app.route('/api/refresh', methods=['GET'])
@@ -125,7 +145,7 @@ def refresh_config():
         except Exception as e:
             print(f"Failed to load config from {config_yml_path}: {e}")
     if app.debug:
-        print(f"Config refreshed from {config_yml_path}")
+        print(f"[+] Config refreshed from `{config_yml_path}`")
         # Check if the values have changed
         for key in app.config:
             try:
@@ -136,30 +156,49 @@ def refresh_config():
     return app.config
 
 
-@app.route('/api/app/<app_name>/update', methods=['POST', 'GET'])
+@app.route('/api/app/<app_name>/update', methods=['POST'])
 def update_app_details(app_name):
+    # update the details of an app with provided data from a form
     if not os.path.exists(os.path.normpath(os.path.join(ROOT_PATH, f'assets/apps', app_name))):
         return render_template('404.html')
     with open(os.path.normpath(os.path.join(ROOT_PATH, f'assets/apps', app_name, 'details.json')), 'r') as f:
         app_data = json.loads(f.read())
-    if request.args.get('image', None) is not None:
-        app_image = request.args.get('image')
-        app_data['image'] = app_image
-    if request.args.get('tag', None) is not None:
-        app_tag = request.args.get('tag', None)
+    if request.files.get('image', None) is not None:
+        app_image = request.files.get('image', None)
+        if app_image.filename.strip() != '':
+            # Null filenames may contain whitespace
+            print(f"Updating image for {app_name} to: `{app_image.filename}`")
+            if not allowed_file(app_image.filename):
+                return f"Invalid file type {app_image.filename}, must be: {', '.join(ALLOWED_EXTENSIONS)}"
+            # scale the image to 512x512 if it is not a gif
+            if os.path.splitext(app_image.filename)[1] != '.gif':
+                app_image = Image.open(app_image)
+                app_image = app_image.resize((512, 512), Image.ANTIALIAS)
+            # save the image depending on the file type
+            app_image.save(os.path.normpath(os.path.join(ROOT_PATH, f'assets/apps', app_name, 'user_logo' + os.path.splitext(app_image.filename)[1])))
+    
+    if request.form.get('tag', None) is not None:
+        app_tag = request.form.get('tag', None)
         app_data['tag'] = app_tag
-    if request.args.get('desc', None) is not None:
-        app_desc = request.args.get('desc', None)
+    if request.form.get('desc', None) is not None:
+        app_desc = request.form.get('desc', None)
         app_data['desc'] = app_desc
-    if request.args.get('name', None) is not None:
+    if request.form.get('name', None) is not None:
         old_app_folder = os.path.normpath(os.path.join(ROOT_PATH, f'assets/apps', app_name))
-        app_name = request.args.get('name', None)
+        app_name = request.form.get('name', None)
         app_data['name'] = app_name
         new_app_folder = os.path.normpath(os.path.join(ROOT_PATH, f'assets/apps', app_name))
         os.rename(old_app_folder, new_app_folder)
+    if request.form.get('custom_url', None) is not None:
+        app_custom_url = request.form.get('custom_url', None)
+        app_data['custom_url'] = app_custom_url
+    if request.form.get('enable_custom_url', False):
+        app_enable_custom_url = request.form.get('enable_custom_url', False)
+        app_data['enable_custom_url'] = app_enable_custom_url
+    print("[+] Updated app" + app_name + ":\n" + '\n'.join([f'{k}: {v}' for k, v in app_data.items()]))
     with open(os.path.normpath(os.path.join(ROOT_PATH, f'assets/apps', app_name, 'details.json')), 'w') as f:
         f.write(json.dumps(app_data))
-    return redirect(url_for('render_app', app_name=app_name))
+    return redirect(url_for('index'))
 
         
 @app.route('/api/app/<app_name>/delete', methods=['POST'])
@@ -188,14 +227,40 @@ def get_apps():
     return jsonify(apps)
 
 
+# redirect to the correct image based on the name of the app
 @app.route('/api/app/<app_name>/image', methods=['GET'])
 def get_app_image(app_name):
-    if not os.path.exists(os.path.normpath(os.path.join(ROOT_PATH, 'assets/apps', app_name))):
-        return render_template('404.html')
-    if not os.path.exists(os.path.normpath(os.path.join(ROOT_PATH, 'assets/apps', app_name, 'user_logo.png'))):
-        return render_template('404.html')
-    download_flag = request.args.get('download', False)
-    return send_from_directory(os.path.normpath(os.path.join(ROOT_PATH, 'assets/apps', app_name)), 'user_logo.png', as_attachment=download_flag)
+    if request.path.startswith('/api/app/') and request.path.endswith('/image'):
+        # Get the full path of the image
+        try:
+            image = [image for image in os.listdir(os.path.normpath(os.path.join(ROOT_PATH, 'assets/apps', app_name))) if image.startswith('user_logo') and allowed_file(image)][0]
+        except IndexError:
+            # no user logo found, return the default logo
+            image = os.path.normpath(os.path.join(ROOT_PATH, DEFAULT_LOGO))
+        # serve it from the url /api/app/<app_name>/image/<image_name>
+        url = url_for('get_app_image_filetype', app_name=app_name, file_name=image)
+        # render the url
+        return redirect(url)
+    return f"Invalid request", 400
+
+
+@app.route('/api/app/<app_name>/image/<file_name>', methods=['GET'])
+def get_app_image_filetype(app_name, file_name):
+    # redirect to the correct image based on the file type
+    if not os.path.exists(os.path.normpath(os.path.join(ROOT_PATH, 'assets/apps', app_name, file_name))):
+        return f"File {file_name} not found", 404
+    # return the correct image based on the file type
+    # check the directory for user_logo, and return the first one found
+    try:
+        image = [image for image in os.listdir(os.path.normpath(os.path.join(ROOT_PATH, 'assets/apps', app_name))) if image.startswith('user_logo') and allowed_file(image)][0]
+    except IndexError:
+        # if no user_logo is found, return a default image
+        image = os.path.normpath(os.path.join(ROOT_PATH, DEFAULT_LOGO))
+    # make sure to return the correct mimetype, with the correct extension
+    image_path = os.path.normpath(os.path.join(ROOT_PATH, 'assets/apps', app_name))
+    image_name = image.split('/')[-1]
+    # set the content length to the size of the file
+    return send_from_directory(image_path, image_name, as_attachment=True)
 
 
 @app.route('/api/app/<app_name>/details', methods=['GET'])
@@ -264,6 +329,8 @@ def run_script(app_name):
         
     else:
         # Handle the error if the script doesn't exist
+        out = b''
+        err = b''
         print(f"{app_name} doesn't have a script")
     if app.debug:
         print(f"Ran script for {app_name} at {script_path}:\nSTDOUT:\n{out.decode('utf-8')}\nSTDERR:\n{err.decode('utf-8')}")

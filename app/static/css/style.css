@@ -1,0 +1,78 @@
+.app-actions-wrapper {
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+
+.app-actions {
+    align-items: center;
+    display: flex;
+    height: 100%;
+    position: relative;
+    width: 100%;
+}
+
+.app-actions i {
+    font-size: 1.5rem !important;
+}
+
+.card-wrapper {
+    position: relative;
+}
+
+.btn-padding {
+    flex: 1;
+    height: 100%;
+}
+
+.delete-btn-wrapper {
+    align-items: center;
+    display: flex;
+    background-color: red;
+    border-bottom-left-radius: .25rem;
+    border-top-left-radius: .25rem;
+    cursor: pointer;
+    flex-grow: 0;
+    flex-shrink: 0;
+    height: 100%;
+    opacity: 0;
+    padding: 0 1.6rem;
+}
+
+.left-side {
+    align-items: center;
+    display: flex;
+    height: 100%;
+    width: 50%;
+}
+
+.modal-backdrop {
+    --bs-backdrop-zindex: 39 !important;
+}
+
+.right-side {
+    align-items: center;
+    display: flex;
+    height: 100%;
+    width: 50%;
+}
+
+.update-btn-wrapper {
+    align-items: center;
+    display: flex;
+    background-color: blue;
+    border-bottom-right-radius: .25rem;
+    border-top-right-radius: .25rem;
+    cursor: pointer;
+    flex-grow: 0;
+    flex-shrink: 0;
+    height: 100%;
+    opacity: 0;
+    padding: 0 1.6rem;
+}
+
+#updateAppModal {
+    color: black;
+}

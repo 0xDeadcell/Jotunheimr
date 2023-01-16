@@ -17,10 +17,13 @@ DEBUG = os.environ.get('DEBUG', True)
 TESTING = os.environ.get('TESTING', True)
 TEMPLATES_AUTO_RELOAD = os.environ.get('TEMPLATES_AUTO_RELOAD', True)
 SEND_FILE_MAX_AGE_DEFAULT = os.environ.get('SEND_FILE_MAX_AGE_DEFAULT', 0)
+
 # Load info from the config.yml file
 # Path: /config.yml
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_YML_PATH = os.path.normpath(os.path.dirname(os.path.abspath(__file__)) + os.sep + 'config.yml')
+
+
 #print(f"[*] Loading config from: {CONFIG_YML_PATH}")
 
 """

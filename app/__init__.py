@@ -35,7 +35,7 @@ def load_config(config_path):
 
 # Create the application instance
 ROOT_PATH = os.path.dirname(os.path.abspath(__file__))
-app = Flask(__name__)
+app = Flask(__name__, template_folder="templates", static_folder="static")
 app.config.from_pyfile('config.py')
 app.search_certificates = search_certificates
 app.config.update(load_config(os.path.join(ROOT_PATH, 'config.yml')))

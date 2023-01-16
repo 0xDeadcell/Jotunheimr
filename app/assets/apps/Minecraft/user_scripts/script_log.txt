@@ -1,4 +1,0 @@
-STDOUT:
-hello world
-
-STDERR:
