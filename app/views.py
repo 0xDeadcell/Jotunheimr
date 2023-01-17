@@ -340,16 +340,19 @@ def upload_script(app_name):
 
 @app.route('/api/app/<app_name>/run_script', methods=['POST', 'GET'])
 def run_script(app_name):
-    print(f"Running script for {app_name}...")
+    args = request.args.get('args', '')
+    if request.method == 'POST':
+        args = request.form.get('script_arguments', '')
+    print(f"Running script for {app_name} with args: {args}")
     script_path = os.path.normpath(os.path.join(ROOT_PATH, 'assets/apps', app_name, 'user_scripts', 'script.py'))
     if os.path.exists(script_path):
         # Popen the script with stdout and stderr redirected
         try:
-            out, err = subprocess.Popen(['python3', script_path], cwd=os.path.join(ROOT_PATH, 'assets/apps', app_name, 'user_scripts'), stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+            out, err = subprocess.Popen(['python3', script_path, args], cwd=os.path.join(ROOT_PATH, 'assets/apps', app_name, 'user_scripts'), stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
         except Exception as e:
             print("Invalid File or Python Version" + err + e)
         try:
-            out, err = subprocess.Popen(['py', script_path], cwd=os.path.join(ROOT_PATH, 'assets/apps', app_name, 'user_scripts'), stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+            out, err = subprocess.Popen(['py', script_path, args], cwd=os.path.join(ROOT_PATH, 'assets/apps', app_name, 'user_scripts'), stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
         except Exception as e:
             print(e)
         # Save the output to a file

@@ -30,6 +30,9 @@
     </div>
     <div class="run-script-container">
         <form action="{{ url_for('run_script', app_name=app_data.name) }}" method="POST">
+            <h3 style="font-weight: bold;font-size: 20px;font-family: monospace;padding-top: 10px;padding-bottom: 5px;">Script Arguments</h3>
+            <p style="font-size: 15px;font-family: monospace;">Enter the arguments for the script, separated by a space. If no arguments are needed, leave this field blank.</p>
+            <input type="text" name="script_arguments" placeholder="Script Arguments:">
             <input type="submit" value="Run Script">
         </form>
     </div>
