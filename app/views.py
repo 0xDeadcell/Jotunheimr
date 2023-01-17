@@ -4,6 +4,7 @@ from werkzeug.utils import secure_filename
 from PIL import Image
 import subprocess
 import mimetypes
+from zipfile import ZipFile
 import json
 import os
 import re
@@ -381,6 +382,19 @@ def get_script_log(app_name):
     else:
         return "No script log found"
 
+@app.route('/api/app/<app_name>/download_script_output', methods=['GET'])
+def download_script_output(app_name):
+    script_output_path = os.path.normpath(os.path.join(ROOT_PATH, 'assets/apps', app_name, 'user_scripts'))
+    output_files = [f for f in os.listdir(script_output_path) if os.path.isfile(os.path.join(script_output_path, f)) and f != 'script.py' and f != 'script_log.txt']
+    # zip the found files
+    if len(output_files) > 0:
+        zip_path = os.path.normpath(os.path.join(ROOT_PATH, 'assets/apps', app_name, 'user_scripts', 'output.zip'))
+        with ZipFile(zip_path, 'w') as zip:
+            for file in output_files:
+                zip.write(os.path.join(script_output_path, file), file)
+        return send_file(zip_path, as_attachment=True)
+    else:
+        return "No output files found"
 
 # default route for 404 errors
 @app.errorhandler(404)

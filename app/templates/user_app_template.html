@@ -33,6 +33,12 @@
             <input type="submit" value="Run Script">
         </form>
     </div>
+    <!-- Download output files (zipped) -->
+    <div class="download-output-container">
+        <form action="{{ url_for('download_script_output', app_name=app_data.name) }}" method="GET">
+            <input type="submit" value="Download Output">
+        </form>
+    </div>
     <!-- Terminal-like window for the script output and script errors -->
     <div class="script-output-container">
         <h3 style="font-weight: bold;font-size: 20px;font-family: monospace;padding-top: 10px;padding-bottom: 5px;">Script Output</h3>
