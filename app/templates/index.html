@@ -48,7 +48,7 @@
                                             </figure>
                                         </div>
                                         <div class="media-content">
-                                            <p class="app-name title is-4">{{ app.name.title() }}</p>
+                                            <p class="app-name title is-4">{{ app.name.replace('_', ' ').title() }}</p>
                                             <p class="app-desc subtitle is-6">{{ app.desc }}</p>
                                             <input type="hidden" class="app-custom-url" value="{{ app.custom_url }}">
                                             <input type="hidden" class="app-enable-custom-url" value="{{ app.enable_custom_url }}">

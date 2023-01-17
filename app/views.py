@@ -60,17 +60,27 @@ def render_app(app_name):
     if not os.path.exists(os.path.normpath(os.path.join(ROOT_PATH, f'assets/apps', app_name, 'details.json'))):
         return render_template('404.html')
     app_data = get_app_details(app_name)
+
     # if the app has a custom url, and it's enabled, redirect to that
     if (app_data.get('custom_url', None) is not None) and (app_data.get('enable_custom_url', False) is not False):
         print(f"[!] Redirecting to custom url: {app_data['custom_url']}")
-        return redirect(app_data['custom_url'])
+        # if the custom url is the same as the app name, render the app
+        if app_data['custom_url'] == app_name:
+            return render_template('user_app_template.html', app_data=app_data, title=title, subtitle=subtitle, logo=logo, header=header, user_css=user_css)
+        else:
+            # open the custom url in a new tab
+            return redirect(app_data['custom_url'], code=302)
     else:
-        return render_template('user_app_template.html', app_data=app_data, title=title, subtitle=subtitle, logo=logo, header=header, user_css=user_css)
+        if app_data is None:
+            return render_template('404.html')
+        else:
+            return render_template('user_app_template.html', app_data=app_data, title=title, subtitle=subtitle, logo=logo, header=header, user_css=user_css)
 
 
 @app.route('/', methods=['POST'])
 def add_app():
-    app_name = re.sub(r'\W+', '', request.form['app_name']).lower()
+    # replace any non-alphanumeric characters with nothing, keep spaces
+    app_name = re.sub(r'[^a-zA-Z0-9 ]', '', request.form.get('app_name', '')).lower()
     app_desc = request.form.get('app_desc', '')
     app_tag = request.form.get('app_tag', 'Misc').title()
     app_custom_url = request.form.get('app_custom_url', '')
@@ -85,14 +95,17 @@ def add_app():
         return redirect(url_for('index'))
     
     # using the default image
-    if not app_image:
+    if not app_image:                                                                                                                                               
         if app.debug:
             print("[!] No image provided, using default image")
         # check to see if the image is in assets/tools/<app_name> first, if so use that
         # otherwise use the default image at assets/tools/asterisk.png
-        if os.path.exists(os.path.normpath(os.path.join(ROOT_PATH, f'assets/tools/{app_name}.png'))):
+        # find a valid image for png, jpg, jpeg, and gif
+        filename_path = os.path.normpath(os.path.join(ROOT_PATH, f'assets/tools/', app_name))
+        valid_image_logo = [filename_path + '.' + ext for ext in ALLOWED_EXTENSIONS if os.path.exists(filename_path + '.' + ext)]
+        if len(valid_image_logo) > 0:
             print(f"Found image for {app_name}!")
-            default_image = f'assets/tools/{app_name}.png'
+            default_image = f'assets/tools/{app_name}.{valid_image_logo[0].split(".")[-1]}'
         else:
             print("Using default image")
             default_image = DEFAULT_LOGO
@@ -100,6 +113,7 @@ def add_app():
     elif not allowed_file(app_image.filename):
         print(f"Failed to create app {app_name}: Invalid file type ({app_image.filename}), must be: {ALLOWED_EXTENSIONS}")
         return redirect(url_for('index'))
+    app_name = app_name.replace(' ', '_')
     
     app_folder = os.path.normpath(os.path.join(ROOT_PATH, 'assets/apps', app_name))
     if os.path.exists(app_folder):
@@ -179,22 +193,27 @@ def update_app_details(app_name):
     
     if request.form.get('tag', None) is not None:
         app_tag = request.form.get('tag', None)
-        app_data['tag'] = app_tag
+        app_data['tag'] = app_tag.title()
     if request.form.get('desc', None) is not None:
         app_desc = request.form.get('desc', None)
         app_data['desc'] = app_desc
     if request.form.get('name', None) is not None:
+        print(app_data)
         old_app_folder = os.path.normpath(os.path.join(ROOT_PATH, f'assets/apps', app_name))
-        app_name = request.form.get('name', None)
+        app_name = request.form.get('name', '').replace(' ', '_').lower()
         app_data['name'] = app_name
+        print(app_data['name'])
         new_app_folder = os.path.normpath(os.path.join(ROOT_PATH, f'assets/apps', app_name))
+        print(f"Renaming app folder from `{old_app_folder}` to `{new_app_folder}`")
         os.rename(old_app_folder, new_app_folder)
     if request.form.get('custom_url', None) is not None:
         app_custom_url = request.form.get('custom_url', None)
         app_data['custom_url'] = app_custom_url
     if request.form.get('enable_custom_url', False):
-        app_enable_custom_url = request.form.get('enable_custom_url', False)
+        app_enable_custom_url = request.form.get('enable_custom_url')
         app_data['enable_custom_url'] = app_enable_custom_url
+    if app_data['custom_url'] == "":
+        app_data['enable_custom_url'] = "off"
     print("[+] Updated app" + app_name + ":\n" + '\n'.join([f'{k}: {v}' for k, v in app_data.items()]))
     with open(os.path.normpath(os.path.join(ROOT_PATH, f'assets/apps', app_name, 'details.json')), 'w') as f:
         f.write(json.dumps(app_data))

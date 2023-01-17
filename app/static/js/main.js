@@ -1,24 +1,44 @@
 function updateFormFields(appContent) {
-
     // get app data
     let name = appContent.find('.app-name').text();
     let desc = appContent.find('.app-desc').text();
     let tag = appContent.closest('.app-tag-wrapper').find('.app-tag').text();
     let customUrl = appContent.find('.app-custom-url').val();
     let enableCustomUrl = appContent.find('.app-enable-custom-url').val();
-    console.log(enableCustomUrl);
-    
+
+    // if the customurl is not set, then the app_enable_custom_url should be set to false
+    if (appContent.find('.app-custom-url').val().trim() === '') {
+        enableCustomUrl = "false";
+    }
+
     // update form fields
     $('#updateName').val(name);
     $('#updateDesc').val(desc);
     $('#updateTag').val(tag);
     $('#updateCustomUrl').val(customUrl);
-    $('#updateEnableCustomUrl').prop('checked', enableCustomUrl.toLowerCase() === 'true' ? true : false);
-    $('#updateEnableCustomUrl').trigger('change');
 
     // update modal title
     $('#updateAppModal').find('.modal-title').text('Edit ' + name + ' App');
+
+    if (enableCustomUrl.toLowerCase() === 'true' || enableCustomUrl === 'on') {
+        $('#updateEnableCustomUrl').prop('checked', true);
+        $('#updateCustomUrl').prop('disabled', false);
+    } else {
+        $('#updateEnableCustomUrl').prop('checked', false);
+        $('#updateCustomUrl').prop('disabled', true);
+    }
+
+    // listen to the checked state of the checkbox of app_enable_custom_url, if checked, enable the custom url input
+    $('#updateEnableCustomUrl').on('change', function(e) {
+        if ($(this).is(':checked')) {
+            $('#updateCustomUrl').prop('disabled', false);
+        } else {
+            $('#updateCustomUrl').prop('disabled', true);
+        }
+    });
 }
+
+
 
 $(document).on('click', '#addAppBtn', function(e) {
     e.preventDefault();
@@ -30,12 +50,11 @@ $(document).on('click', '.update-btn-wrapper', function(e) {
 
     // get app data
     let appContent = $(this).closest('.card-wrapper');
-
     // update form fields
     updateFormFields(appContent);
 
-    // update modal form action
-    $('#updateAppModal').find('form').attr('action', `/api/app/${appContent.find('.app-name').text().trim()}/update`);
+    // update modal form action, replace space with underscore
+    $('#updateAppModal').find('form').attr('action', `/api/app/${appContent.find('.app-name').text().trim().replace(/\s/g, '_')}/update`);
 
     // show modal
     $('#updateAppModal').modal('show');
@@ -70,14 +89,5 @@ $(document).on('change', '#app_enable_custom_url', function(e) {
         $('#app_custom_url').prop('disabled', false);
     } else {
         $('#app_custom_url').prop('disabled', true);
-    }
-});
-
-$(document).on('change', '#updateEnableCustomUrl', function(e) {
-    console.log('change');
-    if ($(this).is(':checked')) {
-        $('#updateCustomUrl').prop('disabled', false);
-    } else {
-        $('#updateCustomUrl').prop('disabled', true);
     }
 });
