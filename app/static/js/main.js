@@ -54,7 +54,7 @@ $(document).on('click', '.update-btn-wrapper', function(e) {
     updateFormFields(appContent);
 
     // update modal form action, replace space with underscore
-    $('#updateAppModal').find('form').attr('action', `/api/app/${appContent.find('.app-name').text().trim().replace(/\s/g, '_')}/update`);
+    $('#updateAppModal').find('form').attr('action', `/api/app/${appContent.find('.app-name').text().toLowerCase().trim().replace(/\s/g, '_')}/update`);
 
     // show modal
     $('#updateAppModal').modal('show');
