@@ -33,6 +33,12 @@
             <input type="submit" value="Run Script">
         </form>
     </div>
+    <!-- Terminal-like window for the script output and script errors -->
+    <div class="script-output-container">
+        <h3 style="font-weight: bold;font-size: 20px;font-family: monospace;padding-top: 10px;padding-bottom: 5px;">Script Output</h3>
+        <!-- Render the script output using the get_script_log function, make a get request to it --> 
+        <p> {{ get_script_log(app_data.name).replace('STDOUT:', '<p style="color: green;">STDOUT:').replace('STDERR:', '<p style="color: red;">STDERR:')|safe }} </p>
+    </div>
 </div>
 
 

@@ -31,6 +31,7 @@ def index():
     subtitle = app.config.get('subtitle', "Application Dashboard")
     logo = app.config.get('logo', "/static/img/logo.png")
     header = app.config.get('header', True)
+    footer = app.config.get('footer', "")
     user_css = app.config.get('stylesheet', "app/assets/css/user.css")
     #print(f"[+] User CSS: {user_css}")
     apps = []
@@ -41,7 +42,7 @@ def index():
         apps.append(app_data)
         if (app_data.get('tag', None) is not None) and (app_data.get('tag', None) not in app_tags):
             app_tags.append(app_data['tag'])
-    return render_template('index.html', apps=apps, app_tags=app_tags, title=title, subtitle=subtitle, logo=logo, header=header, user_css=user_css, app_data=app_data)
+    return render_template('index.html', apps=apps, app_tags=app_tags, footer=footer, title=title, subtitle=subtitle, logo=logo, header=header, user_css=user_css, app_data=app_data)
 
 
 @app.route('/app/<app_name>')
@@ -62,11 +63,13 @@ def render_app(app_name):
     app_data = get_app_details(app_name)
 
     # if the app has a custom url, and it's enabled, redirect to that
-    if (app_data.get('custom_url', None) is not None) and (app_data.get('enable_custom_url', False) is not False):
+    if (app_data.get('custom_url', '') is not None) and (app_data.get('enable_custom_url', False) is not False):
         print(f"[!] Redirecting to custom url: {app_data['custom_url']}")
         # if the custom url is the same as the app name, render the app
-        if app_data['custom_url'] == app_name:
+        print('"' + app_data.get('custom_url') + '"')
+        if app_data['custom_url'] == app_name or app_data.get('custom_url').strip() == '':
             return render_template('user_app_template.html', app_data=app_data, title=title, subtitle=subtitle, logo=logo, header=header, user_css=user_css)
+
         else:
             # open the custom url in a new tab
             return redirect(app_data['custom_url'], code=302)
@@ -119,7 +122,17 @@ def add_app():
     if os.path.exists(app_folder):
         print(f"Failed to create app {app_name}: App already exists")
         return redirect(url_for('index'))
+    # create the app folder
     os.makedirs(app_folder, exist_ok=True)
+    # create the user_scripts folder
+    os.makedirs(os.path.normpath(os.path.join(app_folder, 'user_scripts')), exist_ok=True)
+    # create the script_log.txt file
+    with open(os.path.normpath(os.path.join(app_folder, 'user_scripts', 'script_log.txt')), 'w') as f:
+        f.write('')
+    # create a default script
+    with open(os.path.normpath(os.path.join(app_folder, 'user_scripts', 'script.py')), 'w') as f:
+        f.write("print('Hello World!')")
+    
     if not default_image:
         # save the image depending on the file type
         app_image.save(os.path.normpath(os.path.join(app_folder, 'user_logo' + os.path.splitext(app_image.filename)[1])))
@@ -324,7 +337,7 @@ def upload_script(app_name):
     return redirect(url_for('render_app', app_name=app_name))
 
 
-@app.route('/api/app/<app_name>/run_script', methods=['POST'])
+@app.route('/api/app/<app_name>/run_script', methods=['POST', 'GET'])
 def run_script(app_name):
     print(f"Running script for {app_name}...")
     script_path = os.path.normpath(os.path.join(ROOT_PATH, 'assets/apps', app_name, 'user_scripts', 'script.py'))
@@ -353,8 +366,21 @@ def run_script(app_name):
         print(f"{app_name} doesn't have a script")
     if app.debug:
         print(f"Ran script for {app_name} at {script_path}:\nSTDOUT:\n{out.decode('utf-8')}\nSTDERR:\n{err.decode('utf-8')}")
+    app_details = get_app_details(app_name)
+    if app_details['custom_url']:
+        return redirect(url_for('index'))
+    else:
+        return redirect(url_for('render_app', app_name=app_name))
 
-    return redirect(url_for('render_app', app_name=app_name))
+@app.route('/api/app/<app_name>/get_script_log', methods=['GET'])
+def get_script_log(app_name):
+    script_log_path = os.path.normpath(os.path.join(ROOT_PATH, 'assets/apps', app_name, 'user_scripts', 'script_log.txt'))
+    if os.path.exists(script_log_path):
+        with open(script_log_path, 'r') as f:
+            return f.read()
+    else:
+        return "No script log found"
+
 
 # default route for 404 errors
 @app.errorhandler(404)
@@ -372,3 +398,7 @@ def before_request():
         url = request.url.replace('http://', 'https://', 1)
         code = 301
         return redirect(url, code=code, port=80)
+
+
+
+app.jinja_env.globals.update(get_script_log=get_script_log)
