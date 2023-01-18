@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<link rel="shortcut icon" href="{{ url_for('static', filename='logo.ico') }}">
 <div class="app-container">
     <div id="alert-box" class="alert alert-danger d-block" role="alert" style="display: none;">
         Invalid script type, must be a .py file. 

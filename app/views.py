@@ -31,6 +31,7 @@ def index():
     title = app.config.get('title', "Jotunheimr")
     subtitle = app.config.get('subtitle', "Application Dashboard")
     logo = app.config.get('logo', "/static/img/logo.png")
+    favicon = app.config.get('favicon', '/static/favicon.ico')
     header = app.config.get('header', True)
     footer = app.config.get('footer', "")
     user_css = app.config.get('stylesheet', "app/assets/css/user.css")
@@ -43,7 +44,7 @@ def index():
         apps.append(app_data)
         if (app_data.get('tag', None) is not None) and (app_data.get('tag', None) not in app_tags):
             app_tags.append(app_data['tag'])
-    return render_template('index.html', apps=apps, app_tags=app_tags, footer=footer, title=title, subtitle=subtitle, logo=logo, header=header, user_css=user_css, app_data=app_data)
+    return render_template('index.html', apps=apps, app_tags=app_tags, favicon=favicon, footer=footer, title=title, subtitle=subtitle, logo=logo, header=header, user_css=user_css, app_data=app_data)
 
 
 @app.route('/app/<app_name>')
@@ -348,11 +349,11 @@ def run_script(app_name):
     if os.path.exists(script_path):
         # Popen the script with stdout and stderr redirected
         try:
-            out, err = subprocess.Popen(['python3', script_path, args], cwd=os.path.join(ROOT_PATH, 'assets/apps', app_name, 'user_scripts'), stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+            out, err = subprocess.Popen(['python3', script_path, *args.split()], cwd=os.path.join(ROOT_PATH, 'assets/apps', app_name, 'user_scripts'), stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
         except Exception as e:
             print("Invalid File or Python Version" + err + e)
         try:
-            out, err = subprocess.Popen(['py', script_path, args], cwd=os.path.join(ROOT_PATH, 'assets/apps', app_name, 'user_scripts'), stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+            out, err = subprocess.Popen(['py', script_path, *args.split()], cwd=os.path.join(ROOT_PATH, 'assets/apps', app_name, 'user_scripts'), stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
         except Exception as e:
             print(e)
         # Save the output to a file
@@ -381,7 +382,7 @@ def get_script_log(app_name):
     script_log_path = os.path.normpath(os.path.join(ROOT_PATH, 'assets/apps', app_name, 'user_scripts', 'script_log.txt'))
     if os.path.exists(script_log_path):
         with open(script_log_path, 'r') as f:
-            return f.read()
+            return f.read().replace('\n', '<br>')
     else:
         return "No script log found"
 
