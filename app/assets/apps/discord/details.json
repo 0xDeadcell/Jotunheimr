@@ -1,1 +1,1 @@
-{"name": "discord", "image": "/home/assessor/git/Jotunheimr/app/assets/apps/discord/user_logo.png", "desc": "", "tag": "Entertainment", "custom_url": "", "enable_custom_url": false}
+{"name": "discord", "image": "/home/assessor/git/Jotunheimr/app/assets/apps/discord/user_logo.png", "desc": "", "tag": "Entertainment", "custom_url": "discord://", "enable_custom_url": "on"}
