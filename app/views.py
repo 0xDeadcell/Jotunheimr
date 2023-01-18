@@ -408,13 +408,16 @@ def page_not_found(e):
         print(f"Page not found: {request.url}")
     return render_template('404.html')
 
+
+
 # upgrade http to https
-@app.before_request
-def before_request():
-    if not request.is_secure:
-        url = request.url.replace('http://', 'https://', 1)
-        code = 301
-        return redirect(url, code=code, port=80)
+# @app.before_request
+# def before_request():
+#     if not request.is_secure and app.config.get("redirect_to_https", False):
+#         print("[!] Redirecting request to HTTPS")
+#         url = request.url.replace('http://', 'https://', 1)
+#         code = 301
+#         return redirect(url, code=code)
 
 
 

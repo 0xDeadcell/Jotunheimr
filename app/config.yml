@@ -2,7 +2,12 @@
 title: "Jotunheimr"
 subtitle: "Asgard's Dashboard"
 logo: "/static/img/logo.png"
-https: true # Set to true if you want to use https, uses self-signed certificate
+
+redirect_to_https: false
+https: false # Set to true if you want to use https, uses self-signed certificate
+https_port: 443 # Port to use for https
+http_port: 80 # Port to use for http
+
 
 header: true
 footer: '<p>Made with <span class="has-text-danger">❤️</span>, by <a href="https://github.com/0xdeadcell">0xdeadcell</a> // Fork me on <a href="https://github.com/0xdeadcell/Jotunheimr"><i class="fab fa-github-alt"></i></a></p>' # Set false if you want to hide it.

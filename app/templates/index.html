@@ -39,7 +39,7 @@
                 {% for app in apps if app.tag == tag %}
                     <div class="card-wrapper">
                         <div class="card">
-                            <a href="{{ url_for('render_app', app_name=app.name) }}" rel="noreferrer">
+                            <a href="{{ url_for('render_app', app_name=app.name) }}" target="_self" class="card-link"></a>
                                 <div class="card-content">
                                     <div class="media no-subtitle">
                                         <div class="media-left">
@@ -68,10 +68,10 @@
                                             </div>
                                         </form>
                                     </div>
-                                    <a href="{{ url_for('render_app', app_name=app.name) }}" class="btn-padding"></a>
+                                    <a href="{{ url_for('render_app', app_name=app.name) if not (app.enable_custom_url and app.custom_url.strip() != '') else app.custom_url }}" target="{{'_blank' if (app.enable_custom_url and app.custom_url.strip() != '') else '_self'}}" class="btn-padding"></a>
                                 </div>
                                 <div class="right-side">
-                                    <a href="{{ url_for('render_app', app_name=app.name) }}" class="btn-padding"></a>
+                                  <a href="{{ url_for('render_app', app_name=app.name) if not (app.enable_custom_url and app.custom_url.strip() != '') else app.custom_url }}" target="{{'_blank' if (app.enable_custom_url and app.custom_url.strip() != '') else '_self'}}" class="btn-padding"></a>
                                     <div class="update-btn-wrapper">
                                         <div class="update-btn" aria-label="Update App">
                                             <i class="fas fa-edit"></i>
