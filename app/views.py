@@ -382,9 +382,13 @@ def get_script_log(app_name):
     script_log_path = os.path.normpath(os.path.join(ROOT_PATH, 'assets/apps', app_name, 'user_scripts', 'script_log.txt'))
     if os.path.exists(script_log_path):
         with open(script_log_path, 'r') as f:
-            return f.read().replace('\n', '<br>')
+            data = f.read()
+            if len(data) > 0:
+                return data.replace('\n', '<br>')
+            else:
+                return "No data in script log", 404
     else:
-        return "No script log found"
+        return "No script log found", 404
 
 @app.route('/api/app/<app_name>/download_script_output', methods=['GET'])
 def download_script_output(app_name):
@@ -398,7 +402,7 @@ def download_script_output(app_name):
                 zip.write(os.path.join(script_output_path, file), file)
         return send_file(zip_path, as_attachment=True)
     else:
-        return "No output files found"
+        return "No output files found", 404
 
 # default route for 404 errors
 @app.errorhandler(404)

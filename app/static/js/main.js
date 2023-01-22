@@ -91,3 +91,12 @@ $(document).on('change', '#app_enable_custom_url', function(e) {
         $('#app_custom_url').prop('disabled', true);
     }
 });
+
+
+// add some javascript so that the navbar-burger will work
+$(document).ready(function() {
+    $('.navbar-burger').click(function() {
+        $('.navbar-burger').toggleClass('is-active');
+        $('.navbar-menu').toggleClass('is-active');
+    });
+});

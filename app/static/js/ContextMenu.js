@@ -6,6 +6,7 @@ class ContextMenu {
     this.targetNode = this.getTargetNode();
     this.menuItemsNode = this.getMenuItemsNode();
     this.isOpened = false;
+    this.clickedElement = null;
   }
 
   getTargetNode() {
@@ -35,7 +36,6 @@ class ContextMenu {
       );
       nodes.push(item);
     });
-
     return nodes;
   }
 
@@ -52,11 +52,16 @@ class ContextMenu {
 
     if (data.events && data.events.length !== 0) {
       Object.entries(data.events).forEach((event) => {
-        const [key, value] = event;
-        button.addEventListener(key, value);
+
+        // give the event the clicked element as a parameter
+        const eventHandler = (e) => event[1](e, this.clickedElement);
+        button.addEventListener(event[0], eventHandler)
+      })
+    } else {
+      button.addEventListener("click", () => {
+        this.closeMenu(item.parentElement);
       });
     }
-
     return item;
   }
 
@@ -78,21 +83,22 @@ class ContextMenu {
     }
   }
 
+  
   init() {
     const contextMenu = this.renderMenu();
     document.addEventListener("click", () => this.closeMenu(contextMenu));
     window.addEventListener("blur", () => this.closeMenu(contextMenu));
-    document.addEventListener("contextmenu", (e) => {
-      if(!this.targetNode.some(target => e.target.closest(target))){
-        contextMenu.remove();
-      }
-    });
+    if (this.targetNode.length === 0) return;
+    
 
     this.targetNode.forEach((target) => {
+      
       target.addEventListener("contextmenu", (e) => {
+        if (this.isOpened) return;
         e.preventDefault();
         this.isOpened = true;
-
+        this.clickedElement = e.target;
+        // log the new element
         const { clientX, clientY } = e;
         document.body.appendChild(contextMenu);
 
@@ -104,7 +110,6 @@ class ContextMenu {
           clientX + contextMenu.scrollWidth >= window.innerWidth
             ? window.innerWidth - contextMenu.scrollWidth - 20
             : clientX;
-
         contextMenu.setAttribute(
           "style",
           `--width: ${contextMenu.scrollWidth}px;
@@ -116,7 +121,6 @@ class ContextMenu {
     });
   }
 }
-
 
 
 
@@ -165,7 +169,7 @@ $(document).ready(function() {
     {
       content: `${toggleViewIcon}Toggle App View`,
       events: {
-        click: (e) => console.log(e, "Toggle App View Clicked")
+        click: (e) => $("#toggleDisplayModeBtn").click()
       }
     },
     { 
@@ -183,17 +187,101 @@ $(document).ready(function() {
     {
       content: `${openAppIcon}Open App`,
       events: {
-        click: (e) => // open the first a href tag nearest to the clicked element
-          $(e.target).closest(".app-actions-wrapper").find("a").first().click()
+        click: (e, target) => {
+          // get the closest card-link
+          const cardLink = $(target).closest(".card-wrapper").find(".card-link").attr("href");
+          window.open(cardLink, "_blank");
+        }
       }
     },
-    { content: `${executePythonCodeIcon}Run App Script` },
-    { content: `${downloadZipIcon}Download App Output` },
-    { content: `${viewAppLogs}View App Logs` },
+    { content: `${executePythonCodeIcon}Run App Script`,
+      events: {
+        click: (e, target) => {
+          // get the closest card-link
+          const cardLink = $(target).closest(".card-wrapper").find(".card-link").attr("href");
+          // get the name of the app
+          const appName = cardLink.split("/").pop();
+          // api + app name + /run_script {method: POST}
+          $.ajax({
+            url: `api/app/${appName}/run_script`,
+            type: "POST",
+            success: function() {
+               console.log("Successfully ran script via context menu for app: " + appName);
+               alert("Successfully ran script via context menu for app: " + appName);
+            },
+            error: function() {
+              alert("Error running script via context menu for app: " + appName);
+            }
+          });
+        }
+      }
+    },
+    { content: `${downloadZipIcon}Download App Output`,
+      events: {
+        click: (e, target) => {
+          // get the closest card-link
+          const cardLink = $(target).closest(".card-wrapper").find(".card-link").attr("href");
+          // get the name of the app
+          const appName = cardLink.split("/").pop();
+          // api + app name + /download_script_output {method: GET}
+          $.ajax({
+            url: `api/app/${appName}/download_script_output`,
+            type: "GET",
+            xhrFields: {
+              responseType: "blob"
+            },
+            success: function(data) {
+              output = false;
+              try {
+                if (data.includes("no output")) {
+                  output = true;
+                }
+              } catch (e) {
+                output =  false;
+              }
+              // if "no output" is in the response, then log it as an error
+              if (output) {
+                console.error("No output to download for app: " + appName);
+              } else {
+                window.open(`api/app/${appName}/download_script_output`, "_blank");
+                console.log("Successfully downloaded output via context menu for app: " + appName);
+              }
+            },
+            error: function() {
+              alert("Error downloading output via context menu for app: " + appName);
+            }
+          });
+        }
+      }
+    },
+    { content: `${viewAppLogs}View App Logs`,
+      events: {
+        click: (e, target) => {
+          // get the closest card-link
+          const cardLink = $(target).closest(".card-wrapper").find(".card-link").attr("href");
+          // get the name of the app
+          const appName = cardLink.split("/").pop();
+          // api + app name + /get_script_log {method: GET}
+          $.ajax({
+            url: `api/app/${appName}/get_script_log`,
+            type: "GET",
+            error: function() {
+              alert("Error getting script log via context menu for app: " + appName);
+            },
+            success: function(data) {
+              window.open(`api/app/${appName}/get_script_log`, "_blank");
+          }
+        });
+        }
+      }
+   },
     {
       content: `${editIcon}Edit App`,
       events: {
-        click: (e) => $(e.target).closest(".app-actions-wrapper").find(".update-btn-wrapper").click()
+        click: (e, target) => {
+          const updateButton = $(target).closest(".card-wrapper").find(".app-actions").find(".update-btn");
+          updateButton.click();
+        }
       }
     },
     { 
@@ -201,7 +289,10 @@ $(document).ready(function() {
       divider: "top", // top, bottom, top-bottom
       events: {
         // get the name of the app and delete it
-        click: (e) => $(e.target).closest(".app-actions-wrapper").find(".delete-btn-wrapper").click()
+        click: (e, target) => {
+          const deleteButton = $(target).closest(".card-wrapper").find(".app-actions").find(".delete-btn");
+          deleteButton.click();
+        }
       }
     }
   ];
@@ -214,27 +305,13 @@ $(document).ready(function() {
     mode: "dark"
   });
 
-  const backgroundContextMenu = new ContextMenu({
-    target: ".header",
-    menuItems: backgroundMenuItems,
-    mode: "dark"
-  });
-
-  //const lowerContextMenu = new ContextMenu({
-    //target: ".page-default",
-    //menuItems: backgroundMenuItems,
-    //mode: "dark"
-  //});
-
   const appContextMenu = new ContextMenu({
     target: ".card-wrapper",
     menuItems: menuItems,
     mode: "dark"
   });
 
-  //lowerContextMenu.init();
-  //header.init();
-  backgroundContextMenu.init();
+  header.init();
   appContextMenu.init();
 
 });

@@ -1,7 +1,0 @@
-STDOUT:
-
-STDERR:
-Traceback (most recent call last):
-  File "/workspaces/Jotunheimr/app/assets/apps/build_playbook/user_scripts/script.py", line 9, in <module>
-    import pefile
-ModuleNotFoundError: No module named 'pefile'
