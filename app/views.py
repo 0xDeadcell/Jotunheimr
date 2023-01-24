@@ -228,7 +228,9 @@ def update_app_details(app_name):
         app_enable_custom_url = request.form.get('enable_custom_url')
         app_data['enable_custom_url'] = app_enable_custom_url
     if app_data['custom_url'] == "":
-        app_data['enable_custom_url'] = "off"
+        app_data['enable_custom_url'] = None
+    else:
+        app_data['enable_custom_url'] = True
     print("[+] Updated app" + app_name + ":\n" + '\n'.join([f'{k}: {v}' for k, v in app_data.items()]))
     with open(os.path.normpath(os.path.join(ROOT_PATH, f'assets/apps', app_name, 'details.json')), 'w') as f:
         f.write(json.dumps(app_data))

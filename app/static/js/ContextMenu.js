@@ -300,7 +300,7 @@ $(document).ready(function() {
 
   // wait for .app-card to load
   const header = new ContextMenu({
-    target: ".navbar-menu",
+    target: ".navbar",
     menuItems: backgroundMenuItems,
     mode: "dark"
   });

@@ -100,3 +100,12 @@ $(document).ready(function() {
         $('.navbar-menu').toggleClass('is-active');
     });
 });
+
+$(document).ready(function() {
+    $('.group-title').each(function() {
+        let customIcon = $(this).find('#custom-icon');
+        if (customIcon.width() === 0 || customIcon.height() === 0) {
+            customIcon.addClass('fa-fw fas fa-tools');
+        }
+    });
+});

@@ -34,7 +34,10 @@
         {% for tag in app_tags %}
             <div class="app-tag-wrapper column is-4">
                 <h2 class="group-title">
-                    <i class="fa-fw fa-solid fa-screwdriver-wrench"></i> <span class="app-tag">{{ tag }}</span>
+                  <!-- Set the font awesome icon based on the tag, if no match then set to fa-screwdriver-wrench -->
+                  <!-- Check the font awesome icons here: https://fontawesome.com/icons?d=gallery -->
+                  <i class="fa-fw fas fa-{{ tag|replace(' ', '-')|lower }}" id="custom-icon"></i> <span class="app-tag">{{ tag }}</span>
+                    <!-- <i class="fa-fw fa-solid fa-screwdriver-wrench"></i> <span class="app-tag">{{ tag }}</span> -->
                 </h2>
                 {% for app in apps if app.tag == tag %}
                     <div class="card-wrapper">
@@ -53,8 +56,8 @@
                                             <input type="hidden" class="app-custom-url" value="{{ app.custom_url }}">
                                             <input type="hidden" class="app-enable-custom-url" value="{{ app.enable_custom_url }}">
                                         </div>
-                                        <!-- A custom url exists-->
-                                        <div class="status enabled">{{ "Link" if app.enable_custom_url else "App" }}</div>
+                                        <!-- A custom url exists, otherwise add an icon for an app -->
+                                        <div class="status enabled">{{ "<i class='fas fa-external-link-alt'></i>"|safe if app.enable_custom_url else "<i class='fas fa-code'></i>"|safe }}</div>
                                     </div>
                                 </div>
                             </a>
