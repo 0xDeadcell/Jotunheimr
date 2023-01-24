@@ -5,9 +5,9 @@ favicon: "/static/img/solaire.png"
 logo: "/static/img/solaire.png"
 
 redirect_to_https: false
-https: true # Set to true if you want to use https, uses self-signed certificate
+https: false # Set to true if you want to use https, uses self-signed certificate
 https_port: 443 # Port to use for https
-http_port: 80 # Port to use for http
+http_port: 8080 # Port to use for http
 
 
 header: true

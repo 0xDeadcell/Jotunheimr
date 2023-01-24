@@ -53,7 +53,8 @@
                                             <input type="hidden" class="app-custom-url" value="{{ app.custom_url }}">
                                             <input type="hidden" class="app-enable-custom-url" value="{{ app.enable_custom_url }}">
                                         </div>
-                                        <div class="status enabled">Enabled</div>
+                                        <!-- A custom url exists-->
+                                        <div class="status enabled">{{ "Link" if app.enable_custom_url else "App" }}</div>
                                     </div>
                                 </div>
                             </a>
