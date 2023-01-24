@@ -109,3 +109,50 @@ $(document).ready(function() {
         }
     });
 });
+
+
+// set toggleDisplayModeBtn to toggle:
+// @media screen and (min-width: 769px), print
+// .columns:not(.is-desktop) {
+//     display: flex;
+// }
+
+$(document).ready(function() {
+    let toggleDisplayModeBtn = $('#toggleDisplayModeBtn');
+    let columns = $('.columns');
+    let isDesktop = columns.hasClass('is-desktop');
+
+    // get the default width
+    let defaultWidth = columns.find('.app-tag-wrapper').css('width');
+    let maxdefaultWidth = columns.find('.app-tag-wrapper').css('max-width');
+    // if the columns is not desktop, then the display mode is list
+    // set the button to toggle between flex and block
+    toggleDisplayModeBtn.on('click', function(e) {
+        if (isDesktop) {
+            // find app-tag-wrapper column and set the width to 100%
+            columns.find('.app-tag-wrapper').css('width', '100%');
+            columns.find('.app-tag-wrapper').css('max-width', '100%');
+            // set the columns to list
+            columns.removeClass('is-desktop');
+            columns.addClass('is-mobile');
+            // set the button to toggle between flex and block
+            columns.css('display', 'block');
+        } else {
+            // return to the default width
+            columns.find('.app-tag-wrapper').css('max-width', maxdefaultWidth);
+            columns.find('.app-tag-wrapper').css('width', defaultWidth);
+            // set the columns to flex
+            columns.removeClass('is-mobile');
+            columns.addClass('is-desktop');
+            // set the button to toggle between flex and block
+            columns.css('display', 'flex');
+        }
+        isDesktop = !isDesktop;
+    });
+});
+
+
+// if the page is mobile, then set the columns to block
+if ($(window).width() < 769) {
+    $('.columns').css('display', 'block');
+}
