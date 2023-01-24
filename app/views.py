@@ -386,7 +386,7 @@ def get_script_log(app_name):
         with open(script_log_path, 'r') as f:
             data = f.read()
             if len(data) > 0:
-                return data.replace('\n', '<br>')
+                return data.replace('\n', '<br>'), 200
             else:
                 return "No data in script log", 404
     else:
