@@ -35,7 +35,10 @@ def index():
     header = app.config.get('header', True)
     footer = app.config.get('footer', "")
     user_css = app.config.get('stylesheet', "app/assets/css/user.css")
+    navbar_menu_items = app.config.get('navbar_menu_items', [])
+    #print(f"[+] Header buttons: {navbar_menu_items}")
     #print(f"[+] User CSS: {user_css}")
+
     apps = []
     app_data = {}
     app_tags = []
@@ -44,7 +47,7 @@ def index():
         apps.append(app_data)
         if (app_data.get('tag', None) is not None) and (app_data.get('tag', None) not in app_tags):
             app_tags.append(app_data['tag'])
-    return render_template('index.html', apps=apps, app_tags=app_tags, favicon=favicon, footer=footer, title=title, subtitle=subtitle, logo=logo, header=header, user_css=user_css, app_data=app_data)
+    return render_template('index.html', apps=apps, app_tags=app_tags, navbar_menu_items=navbar_menu_items, favicon=favicon, footer=footer, title=title, subtitle=subtitle, logo=logo, header=header, user_css=user_css, app_data=app_data)
 
 
 @app.route('/app/<app_name>')

@@ -15,6 +15,7 @@
     <script src="{{ url_for('static', filename='js/jquery-3.6.0.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/homer.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ContextMenu.js') }}"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </head>
 <body class="vsc-initialized">
@@ -110,7 +111,7 @@
               </div>
             </div>
           </section>
-          <div class="container-fluid">
+          {{ "<div class='container-fluid'>"|safe if header else "<div class='container-fluid' style='display: none;visibility: hidden;'>"|safe }}
             <nav class="navbar" role="navigation" aria-label="main navigation">
               <div class="container">
                 <div class="navbar-brand">
@@ -118,12 +119,15 @@
                     <i class="fa-fw fas fa-bars"></i>
                   </a>
                 </div>
+                <!-- if the header is set to true, then render the navbar menu -->
                 <div class="navbar-menu">
                   <div class="navbar-start">
-                    <a class="navbar-item" rel="noreferrer" href="/">
-                      <i class="fa-fw fas fa-book mr-2"></i> Home </a>
-                    <a class="navbar-item" rel="noreferrer" href="https://github.com/0xdeadcell/Jotunheimr" target="_blank">
-                      <i class="fa-fw fab fa-github mr-2"></i> Github </a>
+                    <!-- Loop through the navbar_menu_items and render them -->
+                    {% for item in navbar_menu_items %}
+                    <a class="navbar-item" href="{{ item.link }}" target="{{ item.target }}" noreferrer>
+                        <i class="{{ item.icon }}"></i>{{ item.name }}
+                    </a>
+                    {% endfor %}
                   </div>
                   <div class="navbar-end">
                     <a aria-label="Add App" class="navbar-item is-inline-block-mobile" id="addAppBtn">
@@ -197,4 +201,3 @@
     </div>
   </div>
 </div>
-<script src="{{ url_for('static', filename='js/ContextMenu.js') }}"></script>

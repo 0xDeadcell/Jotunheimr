@@ -70,7 +70,7 @@ class ContextMenu {
 
     menuContainer.classList.add("contextMenu");
     menuContainer.setAttribute("data-theme", this.mode);
-
+    
     this.menuItemsNode.forEach((item) => menuContainer.appendChild(item));
 
     return menuContainer;
@@ -147,6 +147,8 @@ const viewAppLogs = `<svg viewBox="0 0 24 24" width="13" height="13" stroke="cur
 // download multiple files icon
 const downloadZipIcon = `<svg viewBox="0 0 122.88 120.89" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="currentColor" style="margin-right: 7px" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><title>download-file</title><path d="M84.58,47a7.71,7.71,0,1,1,10.8,11L66.09,86.88a7.72,7.72,0,0,1-10.82,0L26.4,58.37a7.71,7.71,0,1,1,10.81-11L53.1,63.12l.16-55.47a7.72,7.72,0,0,1,15.43.13l-.15,55L84.58,47ZM0,113.48.1,83.3a7.72,7.72,0,1,1,15.43.14l-.07,22q46,.09,91.91,0l.07-22.12a7.72,7.72,0,1,1,15.44.14l-.1,30h-.09a7.71,7.71,0,0,1-7.64,7.36q-53.73.1-107.38,0A7.7,7.7,0,0,1,0,113.48Z"/></svg>`;
 
+// image plus icon
+const changeBackgroundImage = `<svg viewBox="0 0 24 24"  width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none" style="margin-right: 7px"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 16c1.403-.234 3.637-.293 5.945.243M16 21c-1.704-2.768-4.427-4.148-7.055-4.757m0 0C10.895 13.985 14.558 12 21 12h1M8.5 7C8 7 7 7.3 7 8.5S8 10 8.5 10 10 9.7 10 8.5 9 7 8.5 7z"/><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M22 12c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2m7 0v3m0 3V5m0 0h3m-3 0h-3"/></svg>`;
 
 
 
@@ -170,6 +172,12 @@ $(document).ready(function() {
       content: `${toggleViewIcon}Toggle App View`,
       events: {
         click: (e) => $("#toggleDisplayModeBtn").click()
+      }
+    },
+    {
+      content: `${changeBackgroundImage}Change Background Image`,
+      events: {
+        click: (e) => $("#changeBackgroundImageBtn").click()
       }
     },
     { 
@@ -298,20 +306,29 @@ $(document).ready(function() {
   ];
 
 
-  // wait for .app-card to load
-  const header = new ContextMenu({
-    target: ".navbar",
+  // // wait for .app-card to load
+  // const header = new ContextMenu({
+  //   target: ".navbar",
+  //   menuItems: backgroundMenuItems,
+  //   mode: "dark"
+  // });
+  // set a global theme mode so we can change it from main.js
+  window.themeMode = "dark";
+  const basicMenu = new ContextMenu({
+    // target the header, footer, but not the navbar-start
+    target: ".navbar:not(.navbar-start), .footer",
     menuItems: backgroundMenuItems,
-    mode: "dark"
+    mode: window.themeMode
   });
 
   const appContextMenu = new ContextMenu({
     target: ".card-wrapper",
     menuItems: menuItems,
-    mode: "dark"
+    mode: window.themeMode
   });
 
-  header.init();
+  //header.init();
+  basicMenu.init();
   appContextMenu.init();
 
 });

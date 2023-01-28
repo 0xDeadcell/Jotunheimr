@@ -122,13 +122,21 @@ $(document).ready(function() {
     let columns = $('.columns');
     let isDesktop = columns.hasClass('is-desktop');
 
+    // get the local storage value of displayMode
+    let displayMode = localStorage.getItem('displayMode');
+    // if the displayMode is not set, then set it to flex
+    if (displayMode === null) {
+        localStorage.setItem('displayMode', 'flex');
+    }
+    console.log(displayMode);
+
     // get the default width
     let defaultWidth = columns.find('.app-tag-wrapper').css('width');
     let maxdefaultWidth = columns.find('.app-tag-wrapper').css('max-width');
     // if the columns is not desktop, then the display mode is list
     // set the button to toggle between flex and block
     toggleDisplayModeBtn.on('click', function(e) {
-        if (isDesktop) {
+        if (!isDesktop) {
             // find app-tag-wrapper column and set the width to 100%
             columns.find('.app-tag-wrapper').css('width', '100%');
             columns.find('.app-tag-wrapper').css('max-width', '100%');
@@ -147,9 +155,78 @@ $(document).ready(function() {
             // set the button to toggle between flex and block
             columns.css('display', 'flex');
         }
+
+        // store the display mode in local storage
+        if (isDesktop) {
+            localStorage.setItem('displayMode', 'flex');
+            console.log('block');
+        }
+        else {
+            localStorage.setItem('displayMode', 'block');
+            console.log('flex');
+        }
+
         isDesktop = !isDesktop;
     });
+
+    if (displayMode === 'block') {
+        // if the displayMode is block, and the columns display is not block, then set the columns display to block
+        if (columns.css('display') !== 'block') {
+            // click the button to toggle the display mode
+            toggleDisplayModeBtn.click();
+        }
+    } else if (displayMode === 'flex') {
+        // if the displayMode is flex, and the columns display is not flex, then set the columns display to flex
+        if (columns.css('display') !== 'flex') {
+            // click the button to toggle the display mode
+            toggleDisplayModeBtn.click();
+        }
+    }
 });
+
+
+// change the class="theme-default page-default is-light" to class="theme-default page-default is-dark" to change the theme when the toggleDarkModeBtn is clicked if the div with id="app" has the class "is-light" or "is-dark"
+$(document).ready(function() {
+    let toggleDarkModeBtn = $('#toggleDarkModeBtn');
+    let app = $('#app');
+    let isDark = app.hasClass('is-dark');
+    let isLight = app.hasClass('is-light');
+
+    // if the page is loaded and the local storage has a theme, then set the theme to the local storage theme
+    if (localStorage.getItem('theme') === 'is-dark') {
+        app.removeClass('is-light');
+        app.addClass('is-dark');
+        isDark = true;
+        isLight = false;
+    } else if (localStorage.getItem('theme') === 'is-light') {
+        app.removeClass('is-dark');
+        app.addClass('is-light');
+        isDark = false;
+        isLight = true;
+    }
+    toggleDarkModeBtn.on('click', function(e) {
+        if (isDark) {
+            app.removeClass('is-dark');
+            app.addClass('is-light');
+        } else if (isLight) {
+            app.removeClass('is-light');
+            app.addClass('is-dark');
+        }
+        isDark = !isDark;
+        isLight = !isLight;
+
+        // store the current theme in the local storage
+        if (isDark) {
+            localStorage.setItem('theme', 'is-dark');
+        }
+        if (isLight) {
+            localStorage.setItem('theme', 'is-light');
+        }
+    });
+});
+
+
+
 
 
 // if the page is mobile, then set the columns to block

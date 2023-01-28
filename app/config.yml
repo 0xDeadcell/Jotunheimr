@@ -11,6 +11,16 @@ http_port: 8080 # Port to use for http
 
 
 header: true
+navbar_menu_items:
+  - name: "Home"
+    url: "/"
+    icon: "fa-fw fas fa-book mr-2"
+    target: "_self"
+  - name: "Github"
+    url: "https://github.com/0xdeadcell/Jotunheimr"
+    icon: "fa-fw fab fa-github mr-2"
+    target: "_blank"
+
 footer: '<p>Made with <span class="has-text-danger">❤️</span>, by <a href="https://github.com/0xdeadcell">0xdeadcell</a> // Fork me on <a href="https://github.com/0xdeadcell/Jotunheimr"><i class="fab fa-github-alt"></i></a></p>' # Set false if you want to hide it.
 
 stylesheet:
