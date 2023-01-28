@@ -128,7 +128,6 @@ $(document).ready(function() {
     if (displayMode === null) {
         localStorage.setItem('displayMode', 'flex');
     }
-    console.log(displayMode);
 
     // get the default width
     let defaultWidth = columns.find('.app-tag-wrapper').css('width');
@@ -159,11 +158,9 @@ $(document).ready(function() {
         // store the display mode in local storage
         if (isDesktop) {
             localStorage.setItem('displayMode', 'flex');
-            console.log('block');
         }
         else {
             localStorage.setItem('displayMode', 'block');
-            console.log('flex');
         }
 
         isDesktop = !isDesktop;
@@ -192,25 +189,19 @@ $(document).ready(function() {
     let isDark = app.hasClass('is-dark');
     let isLight = app.hasClass('is-light');
 
-    // if the page is loaded and the local storage has a theme, then set the theme to the local storage theme
-    if (localStorage.getItem('theme') === 'is-dark') {
-        app.removeClass('is-light');
-        app.addClass('is-dark');
-        isDark = true;
-        isLight = false;
-    } else if (localStorage.getItem('theme') === 'is-light') {
-        app.removeClass('is-dark');
-        app.addClass('is-light');
-        isDark = false;
-        isLight = true;
-    }
     toggleDarkModeBtn.on('click', function(e) {
         if (isDark) {
             app.removeClass('is-dark');
             app.addClass('is-light');
+
+            // set the toggleDarkModeBtn icon to the correct icon
+            toggleDarkModeBtn.children('i').removeClass('fa-moon');
+            toggleDarkModeBtn.children('i').addClass('fa-sun');
         } else if (isLight) {
             app.removeClass('is-light');
             app.addClass('is-dark');
+            toggleDarkModeBtn.children('i').removeClass('fa-sun');
+            toggleDarkModeBtn.children('i').addClass('fa-moon');
         }
         isDark = !isDark;
         isLight = !isLight;
@@ -223,10 +214,114 @@ $(document).ready(function() {
             localStorage.setItem('theme', 'is-light');
         }
     });
+
+    // if the page is loaded and the local storage has a theme, then set the theme to the local storage theme
+    if (localStorage.getItem('theme') === 'is-dark') {
+        if (isLight) {
+            toggleDarkModeBtn.click();
+        }
+    } else if (localStorage.getItem('theme') === 'is-light') {
+        if (isDark) {
+            toggleDarkModeBtn.click();
+        }
+    }
+});
+
+// listen for changeBackgroundImageBtn to be clicked, when it is prompt the user to select an image, then upload the image to the server at /api/uploadBackgroundImage
+$(document).ready(function() {
+    let changeBackgroundImageBtn = $('#changeBackgroundImageBtn');
+    let backgroundImage = $('#app');
+    
+    changeBackgroundImageBtn.on('click', function(e) {
+        // prompt the user to select an image
+        // show a modal with a file input
+        let file = null;
+        let fileInput = $('<input type="file" accept="image/*">');
+        fileInput.on('change', function(e) {
+            file = e.target.files[0];
+        });
+        fileInput.click();
+        // if the user entered a file, then upload the file to the server
+        if (file) {
+            // upload the file to the server
+            $.ajax({
+                url: '/api/uploadBackgroundImage',
+                type: 'POST',
+                data: {
+                    file: file
+                },
+                success: function(data) {
+                    // if the file was uploaded successfully, then set the background image to the uploaded file
+                    if (data.success) {
+                        backgroundImage.css('background-image', 'url(' + data.file + ')');
+                        console.log('successfully uploaded: ' + data.file);
+                    }
+                }
+            });
+        }
+
+    });
 });
 
 
 
+$(document).ready(function() {
+if (localStorage.getItem('backgroundImageToggled') == 'true') {
+    document.getElementById('toggleBackgroundImageBtn').innerHTML = '<i class="fas fa-toggle-off fa-fw" style="display: none;"></i><i class="fas fa-toggle-on fa-fw"></i>';
+    }
+    // listen for a click on the toggleBackgroundImageBtn
+    document.getElementById('toggleBackgroundImageBtn').addEventListener('click', function() {
+    // if the backgroundImageToggled is true, then set it to false
+    if (localStorage.getItem('backgroundImageToggled') == 'true') {
+        localStorage.setItem('backgroundImageToggled', 'false');
+        document.getElementById('toggleBackgroundImageBtn').innerHTML = '<i class="fas fa-toggle-off fa-fw"></i><i class="fas fa-toggle-on fa-fw" style="display: none;"></i>';
+    } else {
+        // if the backgroundImageToggled is false, then set it to true
+        localStorage.setItem('backgroundImageToggled', 'true');
+        document.getElementById('toggleBackgroundImageBtn').innerHTML = '<i class="fas fa-toggle-off fa-fw" style="display: none;"></i><i class="fas fa-toggle-on fa-fw"></i>';
+    }
+    });
+});
+
+
+
+// div class="search-bar navbar-item is-inline-block-mobile">
+//                       <label for="search" class="search-label"></label>
+//                       <input type="text">
+//                     </div>
+
+$(document).ready(function() {
+    // listen for text to be entered into the search-bar text input field
+    // listen for no text to be entered into the search-bar text input field
+    $('.search-bar').on('input', function(e) {
+        // if the key pressed is delete, then show all the apps
+        // get the text from the search-label text input
+        let searchLabel = $(this).children('input').val();
+        // if the searchLabel is not empty, then search for the label
+        if (searchLabel !== '') {
+            // search for the label
+            // loop through the card-content, get the app-name title, and compare it to the searchLabel, if it does not match, then hide the app
+            $('.app-name').each(function() {
+                let appName = $(this).text();
+                console.log(appName);
+                if (appName.toLowerCase().indexOf(searchLabel.toLowerCase()) === -1) {
+                    $(this).parent().parent().parent().parent().hide();
+
+                } else {
+                    $(this).parent().parent().parent().parent().show();
+                }
+            });
+        } else {
+            // if the searchLabel is empty, then show all the apps
+            $('.app-name').each(function() {
+                $(this).parent().parent().parent().parent().show();
+            });
+        }
+        // check to see if there are no apps in the category, if there are none, then do not show the category
+        // if app-tag-wrapper column is-3 does not have a card-wrapper child that is currently being shown, then hide the app-tag-wrapper column
+        // loop through both the hidden and not hidden app-tag-wrapper columns
+    });
+});
 
 
 // if the page is mobile, then set the columns to block

@@ -17,7 +17,17 @@ print(f"[+] Root path: {ROOT_PATH}")
 # Set the allowed extensions for files
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 DEFAULT_LOGO = 'assets/tools/asterisk.png'
+CUSTOM_COLORS = app.config.get('colors', {})
 
+BG_IMAGE_DARK = CUSTOM_COLORS.get('dark', {}).get('background-image', '')
+if os.path.exists(os.path.normpath(os.path.join(ROOT_PATH, BG_IMAGE_DARK))) is False:
+    BG_IMAGE_DARK = ''
+
+BG_IMAGE_LIGHT = CUSTOM_COLORS.get('light', {}).get('background-image', '')
+if os.path.exists(os.path.normpath(os.path.join(ROOT_PATH, BG_IMAGE_LIGHT))) is False:
+    BG_IMAGE_LIGHT = ''
+print(f"[+] Dark background image: {BG_IMAGE_DARK if BG_IMAGE_DARK != '' else '! Background image not found !'}")
+print(f"[+] Light background image: {BG_IMAGE_LIGHT if BG_IMAGE_LIGHT != '' else '! Background image not found !'}")
 
 def allowed_file(filename):
     return '.' in filename and \
