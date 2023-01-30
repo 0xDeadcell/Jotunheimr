@@ -7,3 +7,20 @@
     padding: 0;
     margin: 0;
 }
+
+/* make this rule trigger only if there is an element.style background-image and it is light mode, do not select/target the app-tag class */
+
+:root, #app:not(.app-tag)[style*="background-image"] {
+    --highlight-primary: rgba(51,103,214,0.00);
+    --highlight-secondary: rgba(4, 30, 72, 0.00);
+}
+
+body .search-bar input {
+    background-color: rgba(213, 207, 207, 0.10) !important;
+}
+
+
+/* background enabled, light mode, set the app-tag color to white */
+#app:not(.app-tag)[style*="background-image"] .app-tag {
+    color: rgb(109, 143, 255);
+}

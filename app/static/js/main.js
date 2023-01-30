@@ -1,3 +1,11 @@
+// set the dark wallpaper image globally
+let darkBackgroundImage = '/static/img/wallpaper.jpeg';
+let lightBackgroundImage = '/static/img/wallpaper-light.jpeg';
+
+
+
+
+
 function updateFormFields(appContent) {
     // get app data
     let name = appContent.find('.app-name').text();
@@ -209,9 +217,21 @@ $(document).ready(function() {
         // store the current theme in the local storage
         if (isDark) {
             localStorage.setItem('theme', 'is-dark');
+            if (localStorage.getItem('backgroundImageToggled') == 'true')
+                document.getElementById('app').setAttribute('style', "background-image: url(" + darkBackgroundImage + ");");
+            else {
+                document.getElementById('app').setAttribute('style', "");
+            }
         }
+
         if (isLight) {
             localStorage.setItem('theme', 'is-light');
+            if (localStorage.getItem('backgroundImageToggled') == 'true')
+                document.getElementById('app').setAttribute('style', "background-image: url(" + lightBackgroundImage + ");");
+
+            else {
+                document.getElementById('app').setAttribute('style', "");
+            }
         }
     });
 
@@ -234,54 +254,74 @@ $(document).ready(function() {
     
     changeBackgroundImageBtn.on('click', function(e) {
         // prompt the user to select an image
-        // show a modal with a file input
-        let file = null;
-        let fileInput = $('<input type="file" accept="image/*">');
-        fileInput.on('change', function(e) {
+        let fileInput = document.createElement('input');
+        // create file variable to store the file
+        let file;
+        fileInput.type = 'file';
+        fileInput.accept = 'image/*';
+        fileInput.onchange = e => {
+            // get the file
             file = e.target.files[0];
-        });
-        fileInput.click();
-        // if the user entered a file, then upload the file to the server
-        if (file) {
-            // upload the file to the server
-            $.ajax({
-                url: '/api/uploadBackgroundImage',
-                type: 'POST',
-                data: {
-                    file: file
-                },
-                success: function(data) {
-                    // if the file was uploaded successfully, then set the background image to the uploaded file
-                    if (data.success) {
-                        backgroundImage.css('background-image', 'url(' + data.file + ')');
-                        console.log('successfully uploaded: ' + data.file);
-                    }
-                }
-            });
+                // if the user entered a file, then upload the file to the server
+            if (file) {
+                // add the image to local storage at the key 'backgroundImage'
+                localStorage.setItem('backgroundImage', file);
+                console.log("uploaded image to local storage")
+                // upload the image to the server
+            }
         }
+        // access the file variable and print the name
 
+        // prompt the user to select a file
+        fileInput.click();
     });
 });
 
 
 
 $(document).ready(function() {
-if (localStorage.getItem('backgroundImageToggled') == 'true') {
-    document.getElementById('toggleBackgroundImageBtn').innerHTML = '<i class="fas fa-toggle-off fa-fw" style="display: none;"></i><i class="fas fa-toggle-on fa-fw"></i>';
+    if (localStorage.getItem('backgroundImageToggled') == 'true') {
+
+        // check to see if light mode or dark mode is enabled
+        if (document.getElementById('app').classList.contains('is-light')) {
+            document.getElementById('app').setAttribute('style', "background-image: url(" + lightBackgroundImage + ");");
+        }
+        else
+        {
+            document.getElementById('app').setAttribute('style', "background-image: url(" + darkBackgroundImage + ");");
+        }
+        document.getElementById('toggleBackgroundImageBtn').innerHTML = '<i class="fas fa-toggle-on fa-fw"></i><i class="fas fa-toggle-off fa-fw" style="display: none;"></i>';
+        }
+    else {
+        document.getElementById('app').setAttribute('style', "");
+        localStorage.getItem('backgroundImageToggled') == 'false';
+        document.getElementById('toggleBackgroundImageBtn').innerHTML = '<i class="fas fa-toggle-off fa-fw"></i><i class="fas fa-toggle-on fa-fw" style="display: none;"></i>';
     }
     // listen for a click on the toggleBackgroundImageBtn
     document.getElementById('toggleBackgroundImageBtn').addEventListener('click', function() {
-    // if the backgroundImageToggled is true, then set it to false
-    if (localStorage.getItem('backgroundImageToggled') == 'true') {
-        localStorage.setItem('backgroundImageToggled', 'false');
-        document.getElementById('toggleBackgroundImageBtn').innerHTML = '<i class="fas fa-toggle-off fa-fw"></i><i class="fas fa-toggle-on fa-fw" style="display: none;"></i>';
-    } else {
-        // if the backgroundImageToggled is false, then set it to true
-        localStorage.setItem('backgroundImageToggled', 'true');
-        document.getElementById('toggleBackgroundImageBtn').innerHTML = '<i class="fas fa-toggle-off fa-fw" style="display: none;"></i><i class="fas fa-toggle-on fa-fw"></i>';
-    }
+        // if the backgroundImageToggled is true, then set it to false
+        if (localStorage.getItem('backgroundImageToggled') == 'true') {
+            localStorage.setItem('backgroundImageToggled', 'false');
+            document.getElementById('app').setAttribute('style', "");
+            document.getElementById('toggleBackgroundImageBtn').innerHTML = '<i class="fas fa-toggle-off fa-fw"></i><i class="fas fa-toggle-on fa-fw" style="display: none;"></i>';
+        } else {
+            console.log("backgroundImageToggled is true");
+                // check to see if light mode or dark mode is enabled
+            if (document.getElementById('app').classList.contains('is-light')) {
+                document.getElementById('app').setAttribute('style', "background-image: url(" + lightBackgroundImage + ");");
+            }
+            else
+            {
+                document.getElementById('app').setAttribute('style', "background-image: url(" + darkBackgroundImage + ");");
+            }
+            // if the backgroundImageToggled is false, then set it to true
+            localStorage.setItem('backgroundImageToggled', 'true');
+            document.getElementById('toggleBackgroundImageBtn').innerHTML = '<i class="fas fa-toggle-on fa-fw"></i><i class="fas fa-toggle-off fa-fw" style="display: none;"></i>';
+        }
     });
 });
+
+       
 
 
 
