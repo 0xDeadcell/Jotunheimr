@@ -407,7 +407,7 @@ def upload_script(app_name):
         except Exception as e:
             if app.debug:
                 print(f"Failed to remove old script for {app_name}: {e}")
-        script.save(secure_filename(os.path.normpath(os.path.join(ROOT_PATH, 'assets/apps', app_name, 'user_scripts', 'script.py'))))
+        script.save(os.path.normpath(os.path.join(ROOT_PATH, 'assets/apps', app_name, 'user_scripts', 'script.py')))
     except Exception as e:
         if app.debug:
             print(f"Failed to upload script for {app_name}: {e}")
