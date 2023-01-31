@@ -1,9 +1,24 @@
 // set the dark wallpaper image globally
-let darkBackgroundImage = '/static/img/wallpaper.jpeg';
-let lightBackgroundImage = '/static/img/wallpaper-light.jpeg';
 
-
-
+// get the background image from the api /api/get_background?theme=dark, light
+var darkBackgroundImage = null;
+var lightBackgroundImage = null;
+$(document).ready(function() {
+    $.ajax({
+        url: '/api/get_background?theme=dark',
+        type: 'GET',
+        success: function(data) {
+            darkBackgroundImage = data;
+        }
+    });
+    $.ajax({
+        url: '/api/get_background?theme=light',
+        type: 'GET',
+        success: function(data) {
+            lightBackgroundImage = data;
+        }
+    });
+});
 
 
 function updateFormFields(appContent) {
@@ -218,7 +233,7 @@ $(document).ready(function() {
         if (isDark) {
             localStorage.setItem('theme', 'is-dark');
             if (localStorage.getItem('backgroundImageToggled') == 'true')
-                document.getElementById('app').setAttribute('style', "background-image: url(" + darkBackgroundImage + ");");
+                document.getElementById('app').setAttribute('style', "background-image: url(" + '/api/get_background?theme=dark' + ");");
             else {
                 document.getElementById('app').setAttribute('style', "");
             }
@@ -227,7 +242,7 @@ $(document).ready(function() {
         if (isLight) {
             localStorage.setItem('theme', 'is-light');
             if (localStorage.getItem('backgroundImageToggled') == 'true')
-                document.getElementById('app').setAttribute('style', "background-image: url(" + lightBackgroundImage + ");");
+                document.getElementById('app').setAttribute('style', "background-image: url(" + '/api/get_background?theme=light' + ");");
 
             else {
                 document.getElementById('app').setAttribute('style', "");
@@ -250,29 +265,42 @@ $(document).ready(function() {
 // listen for changeBackgroundImageBtn to be clicked, when it is prompt the user to select an image, then upload the image to the server at /api/uploadBackgroundImage
 $(document).ready(function() {
     let changeBackgroundImageBtn = $('#changeBackgroundImageBtn');
-    let backgroundImage = $('#app');
     
     changeBackgroundImageBtn.on('click', function(e) {
-        // prompt the user to select an image
         let fileInput = document.createElement('input');
-        // create file variable to store the file
         let file;
         fileInput.type = 'file';
         fileInput.accept = 'image/*';
         fileInput.onchange = e => {
-            // get the file
             file = e.target.files[0];
-                // if the user entered a file, then upload the file to the server
             if (file) {
-                // add the image to local storage at the key 'backgroundImage'
-                localStorage.setItem('backgroundImage', file);
-                console.log("uploaded image to local storage")
-                // upload the image to the server
+                let theme = localStorage.getItem('theme');
+                if (theme === 'is-dark') {
+                    theme = 'dark';
+                } else if (theme === 'is-light') {
+                    theme = 'light';
+                }
+                let formData = new FormData();
+                formData.append('theme', theme);
+                formData.append('background-image', file);
+                
+                $.ajax({
+                    url: '/api/upload_background',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(data) {
+                        console.log('Image uploaded successfully');
+                        //location.reload();
+                        location.reload();
+                    },
+                    error: function(error) {
+                        console.log('Error uploading image: ', error);
+                    }
+                });
             }
         }
-        // access the file variable and print the name
-
-        // prompt the user to select a file
         fileInput.click();
     });
 });
@@ -284,11 +312,11 @@ $(document).ready(function() {
 
         // check to see if light mode or dark mode is enabled
         if (document.getElementById('app').classList.contains('is-light')) {
-            document.getElementById('app').setAttribute('style', "background-image: url(" + lightBackgroundImage + ");");
+            document.getElementById('app').setAttribute('style', "background-image: url(" + '/api/get_background?theme=light' + ");");
         }
         else
         {
-            document.getElementById('app').setAttribute('style', "background-image: url(" + darkBackgroundImage + ");");
+            document.getElementById('app').setAttribute('style', "background-image: url(" + '/api/get_background?theme=dark' + ");");
         }
         document.getElementById('toggleBackgroundImageBtn').innerHTML = '<i class="fas fa-toggle-on fa-fw"></i><i class="fas fa-toggle-off fa-fw" style="display: none;"></i>';
         }
@@ -305,14 +333,13 @@ $(document).ready(function() {
             document.getElementById('app').setAttribute('style', "");
             document.getElementById('toggleBackgroundImageBtn').innerHTML = '<i class="fas fa-toggle-off fa-fw"></i><i class="fas fa-toggle-on fa-fw" style="display: none;"></i>';
         } else {
-            console.log("backgroundImageToggled is true");
                 // check to see if light mode or dark mode is enabled
             if (document.getElementById('app').classList.contains('is-light')) {
-                document.getElementById('app').setAttribute('style', "background-image: url(" + lightBackgroundImage + ");");
+                document.getElementById('app').setAttribute('style', "background-image: url(" + '/api/get_background?theme=light' + ");");
             }
             else
             {
-                document.getElementById('app').setAttribute('style', "background-image: url(" + darkBackgroundImage + ");");
+                document.getElementById('app').setAttribute('style', "background-image: url(" + '/api/get_background?theme=dark' + ");");
             }
             // if the backgroundImageToggled is false, then set it to true
             localStorage.setItem('backgroundImageToggled', 'true');
@@ -343,23 +370,35 @@ $(document).ready(function() {
             // loop through the card-content, get the app-name title, and compare it to the searchLabel, if it does not match, then hide the app
             $('.app-name').each(function() {
                 let appName = $(this).text();
-                console.log(appName);
                 if (appName.toLowerCase().indexOf(searchLabel.toLowerCase()) === -1) {
                     $(this).parent().parent().parent().parent().hide();
-
+                    $(this).attr('data-show', 'hidden');
                 } else {
                     $(this).parent().parent().parent().parent().show();
+                    $(this).attr('data-show', 'shown');
                 }
             });
         } else {
             // if the searchLabel is empty, then show all the apps
             $('.app-name').each(function() {
                 $(this).parent().parent().parent().parent().show();
+                $(this).attr('data-show', 'shown');
             });
         }
         // check to see if there are no apps in the category, if there are none, then do not show the category
-        // if app-tag-wrapper column is-3 does not have a card-wrapper child that is currently being shown, then hide the app-tag-wrapper column
-        // loop through both the hidden and not hidden app-tag-wrapper columns
+        $('.app-tag-wrapper.column.is-3').each(function() {
+            let categoryShown = false;
+            $(this).find('.app-name').each(function() {
+                if ($(this).attr('data-show') === 'shown') {
+                    categoryShown = true;
+                }
+            });
+            if (categoryShown === false) {
+                $(this).hide();
+            } else {
+                $(this).show();
+            }
+        });
     });
 });
 

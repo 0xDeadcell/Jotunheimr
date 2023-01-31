@@ -23,8 +23,9 @@ navbar_menu_items:
 
 footer: '<p>Made with <span class="has-text-danger">❤️</span>, by <a href="https://github.com/0xdeadcell">0xdeadcell</a> // Fork me on <a href="https://github.com/0xdeadcell/Jotunheimr"><i class="fab fa-github-alt"></i></a></p>' # Set false if you want to hide it.
 
-stylesheet:
-  - "app/assets/static/css/homer.css"
+stylesheets:
+  - name: "Default"
+    stylsheet: "./static/css/homer.css"
 
 columns: "4" # You can change this to any number that is a factor of 12: (1, 2, 3, 4, 6, 12)
 theme: default
@@ -42,7 +43,7 @@ colors:
     card-shadow: rgba(0, 0, 0, 0.5)
     link: "#3273dc"
     link-hover: "#2e4053"
-    background-image: "./static/img/wallpaper-light.jpeg" # Change wallpaper.jpeg to the name of your own custom wallpaper!
+    background-image: "./static/img/backgrounds/light/wallpaper-light.jpeg" # Change wallpaper.jpeg to the name of your own custom wallpaper!
   dark:
     highlight-primary: "#181C3A"
     highlight-secondary: "#181C3A"
@@ -56,7 +57,7 @@ colors:
     card-shadow: rgba(0, 0, 0, 0.5)
     link: "#c1c1c1"
     link-hover: "#fafafa"
-    background-image: "./static/img/wallpaper.jpeg"
+    background-image: "./static/img/backgrounds/dark/wallpaper.jpeg" # Change wallpaper.jpeg to the name of your own custom wallpaper!
 
 
 

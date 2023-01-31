@@ -4,6 +4,8 @@ from werkzeug.utils import secure_filename
 from PIL import Image
 import subprocess
 import mimetypes
+import yaml # pip install pyyaml
+from base64 import b64encode
 from zipfile import ZipFile
 import json
 import os
@@ -18,6 +20,7 @@ print(f"[+] Root path: {ROOT_PATH}")
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 DEFAULT_LOGO = 'assets/tools/asterisk.png'
 CUSTOM_COLORS = app.config.get('colors', {})
+
 
 BG_IMAGE_DARK = CUSTOM_COLORS.get('dark', {}).get('background-image', '')
 if os.path.exists(os.path.normpath(os.path.join(ROOT_PATH, BG_IMAGE_DARK))) is False:
@@ -150,7 +153,7 @@ def add_app():
     
     if not default_image:
         # save the image depending on the file type
-        app_image.save(os.path.normpath(os.path.join(app_folder, 'user_logo' + os.path.splitext(app_image.filename)[1])))
+        app_image.save(secure_filename(os.path.normpath(os.path.join(app_folder, 'user_logo' + os.path.splitext(app_image.filename)[1]))))
     else:
         # default images *should* be .png
         app_image.filename = 'user_logo.png'
@@ -173,6 +176,65 @@ def add_app():
         print(f"Created app {app_name}:\nFolder: {app_folder}\nImage: {app_image.filename}\nDescription: {app_desc}\nTag: {app_tag}\nCustom URL: {app_custom_url}\nEnable Custom URL: {app_enable_custom_url}")
     
     return redirect(url_for('index'))
+
+# upload a background image, requires background_image, and the theme (dark or light)
+@app.route('/api/upload_background', methods=['POST'])
+def upload_background():
+    try:
+        background_image = request.files['background-image']
+        theme = request.form.get('theme', 'dark').lower()
+        print(f"[+] Uploading background {background_image} for theme {theme}...")
+        if not background_image and not background_image.hasattr('filename'):
+            return "No image provided", 400
+        if not theme in ['dark', 'light']:
+            return "Invalid theme provided", 400
+        if not allowed_file(background_image.filename):
+            return "Invalid file type", 400
+        
+        # save the image depending on the file type and theme: /static/img/backgrounds/<theme>/<filename>.<ext>
+        image_path = os.path.normpath(os.path.join(ROOT_PATH, 'static/img/backgrounds', theme, background_image.filename))
+        if os.path.exists(image_path):
+            os.remove(image_path)
+        try:
+            # convert the image from base64 to bytes
+            background_image.save(image_path)
+            print(f"[+] Saved background image to {image_path}")
+                
+            image_path = image_path.replace('\\', '/')
+            # save the image path to the config file
+            new_image_path = "./static" + image_path.split('static')[-1]
+            print(f"[+] New image path: {new_image_path}")
+            config_file = os.path.normpath(os.path.join(ROOT_PATH, 'config.yml'))
+            with open(config_file, 'r', encoding='utf-8', errors='ignore') as f:
+                content = f.read()
+            
+            content = content.replace(app.config['colors'][theme]['background-image'], new_image_path)
+
+            with open(config_file, 'w', encoding='utf-8', errors='ignore') as f:
+                f.write(content)
+            app.config['colors'][theme]['background-image'] = new_image_path
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            print(f"Failed to save background image: {e}")
+        response = "./static" + image_path.split('static')[-1]
+    except Exception as e:
+        print(f"Failed to upload background image: {e}")
+        import traceback
+        traceback.print_exc()
+        response = "Failed to upload background image"
+    return "Success", 200
+
+@app.route('/api/get_background', methods=['GET'])
+def get_background():
+    theme = request.args.get('theme', 'dark').lower()
+    if theme in ['dark', 'light']:
+        bg = app.config.get('colors', {}).get(theme, {}).get('background-image', '')
+        if os.path.exists(os.path.normpath(os.path.join(ROOT_PATH, bg))):
+            # return the image
+            return send_file(os.path.normpath(os.path.join(ROOT_PATH, bg)))
+    return "Invalid theme provided", 400
+
 
 # Refresh the config file
 @app.route('/api/refresh', methods=['GET'])
@@ -217,7 +279,7 @@ def update_app_details(app_name):
                 app_image = Image.open(app_image)
                 app_image = app_image.resize((512, 512), Image.ANTIALIAS)
             # save the image depending on the file type
-            app_image.save(os.path.normpath(os.path.join(ROOT_PATH, f'assets/apps', app_name, 'user_logo' + os.path.splitext(app_image.filename)[1])))
+            app_image.save(secure_filename(os.path.normpath(os.path.join(ROOT_PATH, f'assets/apps', app_name, 'user_logo' + os.path.splitext(app_image.filename)[1]))), optimize=True, quality=95)
     
     if request.form.get('tag', None) is not None:
         app_tag = request.form.get('tag', None)
@@ -345,7 +407,7 @@ def upload_script(app_name):
         except Exception as e:
             if app.debug:
                 print(f"Failed to remove old script for {app_name}: {e}")
-        script.save(os.path.normpath(os.path.join(ROOT_PATH, 'assets/apps', app_name, 'user_scripts', 'script.py')))
+        script.save(secure_filename(os.path.normpath(os.path.join(ROOT_PATH, 'assets/apps', app_name, 'user_scripts', 'script.py'))))
     except Exception as e:
         if app.debug:
             print(f"Failed to upload script for {app_name}: {e}")
