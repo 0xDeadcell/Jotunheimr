@@ -1,1 +1,1 @@
-{"name": "esxi", "image": "C:\\Users\\Matt\\source\\repos\\Jotunheimr\\app\\assets\\apps\\esxi\\user_logo.png", "desc": "", "tag": "Server", "custom_url": "", "enable_custom_url": false}
+{"name": "esxi", "image": "C:\\Users\\Matt\\source\\repos\\Jotunheimr\\app\\assets\\apps\\vmware\\user_logo.png", "desc": "Automatically start my ESXI server", "tag": "Server", "custom_url": "", "enable_custom_url": null}
