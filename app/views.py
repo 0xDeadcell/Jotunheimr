@@ -1,4 +1,5 @@
 from flask import Flask, request, render_template, jsonify, url_for, redirect, send_from_directory, send_file
+from flask_basicauth import BasicAuth
 from app import app, load_config
 from werkzeug.utils import secure_filename
 from PIL import Image
@@ -20,7 +21,11 @@ print(f"[+] Root path: {ROOT_PATH}")
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 DEFAULT_LOGO = 'assets/tools/asterisk.png'
 CUSTOM_COLORS = app.config.get('colors', {})
+VALID_UPLOAD_FILES = tuple(app.config.get('valid_upload_files', ('.py', '.csv', '.txt')))
 
+USERNAME = app.config.get('BASIC_AUTH_USERNAME', None)
+AUTHENTICATION = app.config.get('BASIC_AUTH_PASSWORD', None) # The password for authenticating when running a script
+basic_auth = BasicAuth(app)
 
 BG_IMAGE_DARK = CUSTOM_COLORS.get('dark', {}).get('background-image', '')
 if os.path.exists(os.path.normpath(os.path.join(ROOT_PATH, BG_IMAGE_DARK))) is False:
@@ -398,22 +403,27 @@ def get_app_details(app_name):
                 return "Error: Invalid JSON file"
     return render_template('404.html')
 
-
 @app.route('/api/app/<app_name>/upload_script', methods=['POST'])
+@basic_auth.required
 def upload_script(app_name):
     script = request.files['script']
-    if not script.filename.endswith('.py'):
-        print(f"[!] Failed to upload script for {app_name}: Invalid file type, must be .py")
+    if not script.filename.endswith(VALID_UPLOAD_FILES):
+        print(f"[!] Failed to upload script for {app_name}: Invalid file type, must be one of: {', '.join(VALID_UPLOAD_FILES)}")
         # return a popup saying that the file type is invalid
         return redirect(url_for('render_app', app_name=app_name))
     os.makedirs(os.path.normpath(os.path.join(ROOT_PATH, 'assets/apps', app_name, 'user_scripts')), exist_ok=True)
+    if script.filename.endswith('.py'):
+        script.filename = 'script.py'
     try:
+        f_name = os.path.normpath(os.path.join(ROOT_PATH, 'assets/apps', app_name, 'user_scripts', script.filename))
         try:
-            os.remove(os.path.normpath(os.path.join(ROOT_PATH, 'assets/apps', app_name, 'user_scripts', 'script.py')))
+            if os.path.exists(f_name):
+                os.remove(f_name)
         except Exception as e:
             if app.debug:
                 print(f"Failed to remove old script for {app_name}: {e}")
-        script.save(os.path.normpath(os.path.join(ROOT_PATH, 'assets/apps', app_name, 'user_scripts', 'script.py')))
+        script.save(f_name)
+        #script.save(os.path.normpath(os.path.join(ROOT_PATH, 'assets/apps', app_name, 'user_scripts', 'script.py')))
     except Exception as e:
         if app.debug:
             print(f"Failed to upload script for {app_name}: {e}")
@@ -421,8 +431,8 @@ def upload_script(app_name):
         print(f"Successfuly uploaded script for {app_name}: {script.filename}")
     return redirect(url_for('render_app', app_name=app_name))
 
-
 @app.route('/api/app/<app_name>/run_script', methods=['POST', 'GET'])
+@basic_auth.required
 def run_script(app_name):
     args = request.args.get('args', '')
     if request.method == 'POST':
@@ -434,11 +444,19 @@ def run_script(app_name):
         try:
             out, err = subprocess.Popen(['python3', script_path, *args.split()], cwd=os.path.join(ROOT_PATH, 'assets/apps', app_name, 'user_scripts'), stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
         except Exception as e:
-            print("Invalid File or Python Version" + err + e)
+            print("Invalid File or Python Version" + str(err) + str(e))
         try:
             out, err = subprocess.Popen(['py', script_path, *args.split()], cwd=os.path.join(ROOT_PATH, 'assets/apps', app_name, 'user_scripts'), stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+            if err:
+                raise Exception
         except Exception as e:
             print(e)
+            try:
+                out, err = subprocess.Popen(['python3.11', script_path, *args.split()], cwd=os.path.join(ROOT_PATH, 'assets/apps', app_name, 'user_scripts'), stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+            except Exception as e:
+                print(e)        
+            
+        
         # Save the output to a file
         with open(os.path.normpath(os.path.join(ROOT_PATH, 'assets/apps', app_name, 'user_scripts', 'script_log.txt')), 'w') as f:
             f.write("STDOUT:\n")
