@@ -3,12 +3,15 @@ title: "Jotunheimr"
 subtitle: "Asgard's Dashboard"
 favicon: "/static/img/solaire.png"
 logo: "/static/img/solaire.png"
+BASIC_AUTH_USERNAME: "admin"
+BASIC_AUTH_PASSWORD: "password" # Comment this line out to not require a password when running scripts
+
+valid_upload_files: ['.py', '.csv', '.txt']
 
 redirect_to_https: false
 https: false # Set to true if you want to use https, uses self-signed certificate
 https_port: 443 # Port to use for https
 http_port: 8080 # Port to use for http
-
 
 header: true
 navbar_menu_items:
@@ -57,7 +60,7 @@ colors:
     card-shadow: rgba(0, 0, 0, 0.5)
     link: "#c1c1c1"
     link-hover: "#fafafa"
-    background-image: "./static/img/backgrounds/dark/wallpaper.jpeg" # Change wallpaper.jpeg to the name of your own custom wallpaper!
+    background-image: "./static/img/backgrounds/dark/wallhaven-j3j5ym.png" # Change wallpaper.jpeg to the name of your own custom wallpaper!
 
 
 
