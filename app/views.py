@@ -276,10 +276,16 @@ def update_app_details(app_name):
                 return f"Invalid file type {app_image.filename}, must be: {', '.join(ALLOWED_EXTENSIONS)}"
             # scale the image to 512x512 if it is not a gif
             if os.path.splitext(app_image.filename)[1] != '.gif':
-                app_image = Image.open(app_image)
-                app_image = app_image.resize((512, 512), Image.ANTIALIAS)
-            # save the image depending on the file type
-            app_image.save(secure_filename(os.path.normpath(os.path.join(ROOT_PATH, f'assets/apps', app_name, 'user_logo' + os.path.splitext(app_image.filename)[1]))), optimize=True, quality=95)
+                f_name = os.path.normpath(os.path.join(ROOT_PATH, f'assets/apps', app_name, 'user_logo' + os.path.splitext(app_image.filename)[1]))
+                # save the image depending on the file type
+                print(f_name)
+                app_image.save(f_name)
+                with Image.open(f_name) as im:
+                    app_image = im.resize((512, 512))
+                    app_image.save(f_name)
+            else:    
+                # save the image depending on the file type
+                app_image.save(secure_filename(os.path.normpath(os.path.join(ROOT_PATH, f'assets/apps', app_name, 'user_logo' + os.path.splitext(app_image.filename)[1]))), optimize=True, quality=95)
     
     if request.form.get('tag', None) is not None:
         app_tag = request.form.get('tag', None)
